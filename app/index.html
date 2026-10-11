@@ -1832,7 +1832,7 @@ body.role-employee [data-view="customers"]{display:none!important}
         <div class="avatar" id="sessionAvatar">H</div>
         <div><strong id="sessionUserName">Ricardo Dias</strong><span id="sessionUserRole">Administrator</span></div>
       </div>
-      <div class="sidebar-version">RD Homemaster · Version 1.3.2</div>
+      <div class="sidebar-version">RD Homemaster · Version 1.3.3</div>
     </div>
   </aside>
 
@@ -3239,7 +3239,7 @@ body.role-employee [data-view="customers"]{display:none!important}
 
 <script>
 const STORAGE='hausmeister_app_v10';
-const APP_VERSION='1.3.2';
+const APP_VERSION='1.3.3';
 const PRODUCTION_MODE=true;
 const PROD_INIT_KEY='hausmeister_production_initialized_v1';
 function localISODate(d=new Date()){
@@ -5802,22 +5802,24 @@ async function updatePushUI(){
     return;
   }
 
+  // iPhone/iPad zuerst behandeln: In eingebetteten Browsern fehlt PushManager,
+  // obwohl Web-Push nach Installation als Home-Screen-App funktioniert.
+  if(isIOSDevice()&&!isStandaloneApp()){
+    if(mainBtn){mainBtn.textContent='In Safari öffnen & installieren';mainBtn.disabled=false}
+    if(dayBtn){dayBtn.textContent='In Safari öffnen & installieren';dayBtn.disabled=false}
+    if(status){status.textContent='iPhone: Unten rechts auf das Kompass-Symbol → in Safari öffnen → Teilen → Zum Home-Bildschirm.';status.className='push-status-text warn'}
+    if(banner){
+      const t=qs('#employeePushBannerText');
+      if(t)t.textContent='Du bist gerade noch im eingebetteten Browser. Unten rechts auf das Kompass-Symbol tippen, in Safari öffnen, dann Teilen → Zum Home-Bildschirm. Danach die installierte Hausmeister-App öffnen und Push aktivieren.';
+    }
+    return;
+  }
+
   const supported=('Notification'in window)&&('serviceWorker'in navigator)&&('PushManager'in window);
   if(!supported){
     if(mainBtn){mainBtn.textContent='Auf diesem Gerät nicht verfügbar';mainBtn.disabled=true}
     if(dayBtn){dayBtn.textContent='Push nicht unterstützt';dayBtn.disabled=true}
-    if(status){status.textContent='Dieses Gerät unterstützt Web-Push nicht.';status.className='push-status-text warn'}
-    return;
-  }
-
-  if(isIOSDevice()&&!isStandaloneApp()){
-    if(mainBtn){mainBtn.textContent='Erst zum Home-Bildschirm hinzufügen';mainBtn.disabled=false}
-    if(dayBtn){dayBtn.textContent='Push einrichten';dayBtn.disabled=false}
-    if(status){status.textContent='iPhone: App zuerst über Teilen → Zum Home-Bildschirm installieren.';status.className='push-status-text warn'}
-    if(banner){
-      const t=qs('#employeePushBannerText');
-      if(t)t.textContent='Auf dem iPhone funktioniert Push nach Installation über Teilen → Zum Home-Bildschirm. Danach hier einmal aktivieren.';
-    }
+    if(status){status.textContent='Dieses Gerät unterstützt Web-Push in diesem Browser nicht.';status.className='push-status-text warn'}
     return;
   }
 
@@ -5849,12 +5851,12 @@ async function enableEmployeePush(){
     alert('Push-Benachrichtigungen werden auf dem Handy des jeweiligen Mitarbeiters aktiviert.');
     return;
   }
-  if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window)){
-    alert('Dieses Gerät unterstützt keine Push-Benachrichtigungen.');
+  if(isIOSDevice()&&!isStandaloneApp()){
+    alert('Du bist auf dem iPhone noch nicht in der installierten App.\n\n1. Unten rechts auf das Kompass-Symbol tippen, um diese Seite in Safari zu öffnen.\n2. In Safari auf Teilen tippen.\n3. „Zum Home-Bildschirm“ wählen.\n4. Die neue Hausmeister-App vom Home-Bildschirm öffnen.\n5. Dort erneut „Benachrichtigungen aktivieren“ tippen.');
     return;
   }
-  if(isIOSDevice()&&!isStandaloneApp()){
-    alert('Auf dem iPhone bitte zuerst: Teilen → Zum Home-Bildschirm. Öffne danach die installierte Hausmeister-App und tippe dort auf „Benachrichtigungen aktivieren“.');
+  if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window)){
+    alert('Dieses Gerät unterstützt keine Push-Benachrichtigungen in diesem Browser.');
     return;
   }
   try{
