@@ -1,0 +1,24 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Konto löschen – Hausmeister App</title><style>body{font:16px/1.55 system-ui,-apple-system,sans-serif;background:#f4f7fb;color:#17324d;margin:0}.wrap{max-width:720px;margin:auto;padding:38px 20px}.card{background:#fff;border:1px solid #dce7f2;border-radius:22px;padding:28px;box-shadow:0 18px 45px rgba(15,60,110,.1)}label{display:grid;gap:6px;margin:13px 0;font-weight:700}input{padding:12px;border:1px solid #cfdceb;border-radius:11px;font:inherit}.btn{border:0;background:#d33d3d;color:#fff;padding:12px 16px;border-radius:12px;font-weight:900;cursor:pointer}.btn:disabled{opacity:.55}.muted{color:#61758b;font-size:14px}.ok{color:#187a4a}.err{color:#a72f2f}.links a{color:#075fd0}</style></head><body><main class="wrap"><section class="card"><h1>Hausmeister App – Konto löschen</h1><p>Hier kannst du die Löschung deines App-Kontos auch dann durchführen, wenn die App nicht mehr installiert ist.</p><p class="muted">Die Anmeldeidentität und das persönliche App-Profil werden gelöscht. Betriebliche Unterlagen können nur soweit weiter gespeichert werden, wie dies für Verträge, Nachweise oder gesetzliche Pflichten erforderlich ist.</p><label>E-Mail-Adresse<input id="email" type="email" autocomplete="username"></label><label>Passwort<input id="password" type="password" autocomplete="current-password"></label><label><span><input id="confirm" type="checkbox"> Ich möchte mein Hausmeister-App-Konto endgültig löschen.</span></label><button class="btn" id="deleteBtn">Konto endgültig löschen</button><p id="status" class="muted"></p><p class="links"><a href="https://www.rd-homemaster.de/app-datenschutz.html">Datenschutzerklärung</a> · <a href="https://www.rd-homemaster.de/app-support.html">Support</a></p></section></main><script>
+const URL='https://cigajlnyrbkmadddtoaf.supabase.co';
+const KEY='sb_publishable_TjFXHmDm0pKHaHZ20ppVhg_kJekQldL';
+const $=s=>document.querySelector(s);
+$('#deleteBtn').onclick=async()=>{
+ const status=$('#status'),btn=$('#deleteBtn');
+ if(!$('#confirm').checked){status.className='err';status.textContent='Bitte bestätige zuerst die endgültige Löschung.';return}
+ const email=$('#email').value.trim(),password=$('#password').value;
+ if(!email||!password){status.className='err';status.textContent='Bitte E-Mail und Passwort eingeben.';return}
+ if(!confirm('Konto wirklich endgültig löschen?'))return;
+ btn.disabled=true;status.className='muted';status.textContent='Anmeldung wird geprüft …';
+ try{
+  const login=await fetch(URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  const session=await login.json();
+  if(!login.ok||!session.access_token)throw new Error(session.error_description||session.msg||'Anmeldung fehlgeschlagen.');
+  status.textContent='Konto wird gelöscht …';
+  const del=await fetch(URL+'/functions/v1/delete-account',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+session.access_token,'Content-Type':'application/json'},body:'{}'});
+  const result=await del.json().catch(()=>({}));
+  if(!del.ok)throw new Error(result.error||result.message||'Löschung fehlgeschlagen.');
+  status.className='ok';status.textContent='Dein Hausmeister-App-Konto wurde gelöscht.';
+  $('#email').value='';$('#password').value='';$('#confirm').checked=false;
+ }catch(e){status.className='err';status.textContent=e.message;btn.disabled=false}
+};
+</script></body></html>
