@@ -1220,10 +1220,7 @@ body.login-locked .login-screen{display:flex}
         <div><strong>Hausmeister</strong><small>Betriebs-App</small></div>
       </div>
 
-      <div class="login-tabs">
-        <button class="login-tab active" data-login-tab="cloud">Anmelden</button>
-        <button class="login-tab" data-login-tab="demo">Demo testen</button>
-      </div>
+      <div class="login-tabs"><button class="login-tab active" data-login-tab="cloud">Anmelden</button></div>
 
       <div id="login-cloud-pane" class="login-pane active">
         <h2>Willkommen zurück</h2>
@@ -1239,13 +1236,7 @@ body.login-locked .login-screen{display:flex}
         </label>
         <button class="primary-btn login-main-btn" id="appCloudLoginBtn">Anmelden</button>
         <button class="ghost-btn login-secondary-btn" id="appCloudSignupBtn">Konto erstellen</button>
-        <div id="appCloudLoginHint" class="login-hint">Cloud ist eingerichtet. Das erste Konto wird Administrator; weitere Konten benötigen eine Einladung.</div>
-      </div>
-
-      <div id="login-demo-pane" class="login-pane">
-        <h2>App testen</h2>
-        <p>Wähle eine Rolle aus, um die jeweilige Ansicht zu prüfen.</p>
-        <div id="demoLoginAccounts" class="demo-login-accounts"></div>
+        <div id="appCloudLoginHint" class="login-hint">Erstes Firmenkonto: info@rd-homemaster.de. Weitere Konten benötigen eine Einladung.</div>
       </div>
 
       <div id="loginMessage" class="login-message"></div>
@@ -1289,7 +1280,7 @@ body.login-locked .login-screen{display:flex}
         <div class="avatar" id="sessionAvatar">H</div>
         <div><strong id="sessionUserName">Ricardo Dias</strong><span id="sessionUserRole">Administrator</span></div>
       </div>
-      <div class="sidebar-version">Hausmeister · Version 1.0.1</div>
+      <div class="sidebar-version">Hausmeister · Version 1.1.0</div>
     </div>
   </aside>
 
@@ -2058,7 +2049,7 @@ body.login-locked .login-screen{display:flex}
         <div>
           <p class="eyebrow">CLOUD & SYNCHRONISIERUNG</p>
           <h2>Online-Betrieb & Mehrgeräte-Sync</h2>
-          <p>Admin-, Mitarbeiter- und Kundenkonten können über Supabase mit rollenbezogenen Daten verbunden werden.</p>
+          <p>Admin-, Mitarbeiter- und Kundenkonten sind mit der produktiven Supabase-Cloud und serverseitigen Rollenrechten verbunden.</p>
         </div>
         <div class="cloud-head-actions">
           <button class="ghost-btn" id="cloudPullBtn">Aus Cloud laden</button>
@@ -2101,7 +2092,7 @@ body.login-locked .login-screen{display:flex}
             <span id="cloudLoginBadge" class="doc-status draft">Abgemeldet</span>
           </div>
           <label>E-Mail
-            <input id="cloudEmail" type="email" placeholder="info@hausmeister.de">
+            <input id="cloudEmail" type="email" placeholder="info@rd-homemaster.de">
           </label>
           <label>Passwort
             <input id="cloudPassword" type="password" placeholder="Cloud-Passwort">
@@ -2132,7 +2123,7 @@ body.login-locked .login-screen{display:flex}
               </select>
             </label>
             <div class="cloud-info-box">
-              <strong>V18: echte Rollenstruktur vorbereitet</strong>
+              <strong>Produktive Rollenstruktur aktiv</strong>
               <span>Im Modus „Rollenbasierte Tabellen“ liegen Kunden, Mitarbeiter, Objekte, Aufträge, Kontrollen, Mängel und Anfragen getrennt in Supabase. Row Level Security entscheidet serverseitig, welche Datensätze ein Konto lesen oder ändern darf.</span>
             </div>
           </div>
@@ -2228,7 +2219,7 @@ body.login-locked .login-screen{display:flex}
             <div><b>✓</b><span>Arbeitsberichte, Fotos & PDF-Druck</span></div>
             <div><b>✓</b><span>Tourenplanung & Navigation</span></div>
             <div><b>✓</b><span>Kundenportal & Serviceanfragen</span></div>
-            <div><b>✓</b><span>Cloud-/Rollenstruktur vorbereitet</span></div>
+            <div><b>✓</b><span>Cloud-Datenbank & Rollen aktiv</span></div>
             <div><b>✓</b><span>PWA, Offline-Cache & App-Installation</span></div>
           </div>
         </section>
@@ -2402,7 +2393,7 @@ body.login-locked .login-screen{display:flex}
       <select name="linkId" id="newUserLink"></select>
     </label>
     <div class="permission-hint">
-      Dies ist weiterhin eine lokale Demo. Passwörter und sichere Anmeldung kommen mit der späteren Cloud-/Backend-Version.
+      Produktivbetrieb mit Supabase Auth, rollenbasiertem Zugriff und Cloud-Synchronisierung.
     </div>
     <div class="modal-actions">
       <button value="cancel" class="ghost-btn">Abbrechen</button>
@@ -2627,7 +2618,9 @@ body.login-locked .login-screen{display:flex}
 
 <script>
 const STORAGE='hausmeister_app_v10';
-const APP_VERSION='1.0.1';
+const APP_VERSION='1.1.0';
+const PRODUCTION_MODE=true;
+const PROD_INIT_KEY='hausmeister_production_initialized_v1';
 function localISODate(d=new Date()){
   const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
   return `${y}-${m}-${day}`;
@@ -2674,7 +2667,7 @@ const seed={
     {id:202,object:'Bachstraße 12',type:'Biomüll',pickup:'2026-10-16',putOut:'2026-10-15'},
     {id:203,object:'Kirchstraße 8',type:'Papier',pickup:'2026-10-20',putOut:'2026-10-19'}
   ],
-  company:{name:'Hausmeisterservice',phone:'0152 08705639',email:'info@hausmeister.de',address:'Unterboihingerstr. 65, 72644 Oberboihingen'},
+  company:{name:'Hausmeisterservice',phone:'0152 08705639',email:'info@rd-homemaster.de',address:'Unterboihingerstr. 65, 72644 Oberboihingen'},
   season:{winterStart:'2026-11-01',winterEnd:'2027-03-31'},
   automation:{enabled:true,leadDays:2},
   plans:[
@@ -2694,7 +2687,7 @@ const seed={
     {id:803,name:'Reinigungsmittel',unit:'Kanister',stock:1,minStock:2}
   ],
   users:[
-    {id:1001,name:'Ricardo Dias',email:'info@hausmeister.de',role:'admin',active:true,employeeId:1},
+    {id:1001,name:'Ricardo Dias',email:'info@rd-homemaster.de',role:'admin',active:true,employeeId:1},
     {id:1002,name:'Murat Y.',email:'murat@hausmeister.de',role:'employee',active:true,employeeId:2},
     {id:1003,name:'Hausverwaltung Müller',email:'portal@hv-mueller.de',role:'customer',active:true,customerId:1},
     {id:1004,name:'Immo Süd GmbH',email:'portal@immosued.de',role:'customer',active:true,customerId:3}
@@ -2774,10 +2767,31 @@ function rhythmText(days){
   if(days===30)return 'monatlich';
   return `alle ${days} Tage`;
 }
+function productionSeed(){
+  const d=clone(seed);
+  d.jobs=[];d.objects=[];d.customers=[];d.employees=[];d.maintenance=[];
+  d.bins=[];d.plans=[];d.defects=[];d.materials=[];d.users=[];d.requests=[];d.inspections=[];
+  return d;
+}
+function looksLikeDemoData(d){
+  if(!d)return false;
+  const demoObject=(d.objects||[]).some(o=>o?.name==='Bachstraße 12');
+  const demoCustomer=(d.customers||[]).some(c=>c?.name==='Hausverwaltung Müller');
+  const demoJob=(d.jobs||[]).some(j=>Number(j?.id)===1&&j?.title==='Treppenhausreinigung');
+  return demoObject&&demoCustomer&&demoJob;
+}
 function load(){
   try{
     const saved=JSON.parse(localStorage.getItem(STORAGE));
-    const d=saved||clone(seed);
+    let d=saved||productionSeed();
+    if(PRODUCTION_MODE&&localStorage.getItem(PROD_INIT_KEY)!=='1'){
+      if(saved&&looksLikeDemoData(saved)){
+        localStorage.setItem('hausmeister_pre_production_demo_backup',JSON.stringify({savedAt:new Date().toISOString(),payload:saved}));
+        d=productionSeed();
+        localStorage.setItem(STORAGE,JSON.stringify(d));
+      }
+      localStorage.setItem(PROD_INIT_KEY,'1');
+    }
     d.jobs=(d.jobs||[]).map(j=>({
       priority:'normal',estimatedMinutes:60,checklist:[],notes:'',materialsUsed:[],timerSeconds:Math.round((Number(j.hours)||0)*3600),estimatedMinutes:60,
       signature:'',signatureName:'',reportNote:'',...j
@@ -2802,7 +2816,7 @@ function load(){
     d.season=d.season||clone(seed.season);
     d.automation=d.automation||clone(seed.automation);
     return d;
-  }catch(e){return clone(seed)}
+  }catch(e){return PRODUCTION_MODE?productionSeed():clone(seed)}
 }
 
 const titles={
@@ -2888,7 +2902,8 @@ const STRUCTURED_TABLES={
   defects:'rd_defects',
   inspections:'rd_inspections',
   requests:'rd_requests',
-  bins:'rd_bins'
+  bins:'rd_bins',
+  maintenance:'rd_maintenance'
 };
 function refText(v){return v===undefined||v===null?'':String(v)}
 function findObjectRef(name){
@@ -2922,7 +2937,7 @@ function rowForEntity(collection,item){
     base.customer_ref=refText(findCustomerRefByName(item.customer));
     base.employee_ref=refText(employeeRefForJob(item));
   }
-  if(['plans','defects','inspections','bins'].includes(collection)){
+  if(['plans','defects','inspections','bins','maintenance'].includes(collection)){
     base.object_ref=refText(findObjectRef(item.object));
     const obj=data.objects.find(o=>o.name===item.object);
     base.customer_ref=refText(findCustomerRefByName(obj?.customer||''));
@@ -2966,6 +2981,33 @@ function pushCollectionsForRole(role){
   if(role==='employee')return ['jobs','defects','inspections'];
   if(role==='customer')return ['requests'];
   return [];
+}
+
+async function structuredUpsertSettings(){
+  const c=getCloudConfig();
+  const payload={
+    company:data.company||{},
+    season:data.season||{},
+    automation:data.automation||{},
+    inspectionPoints:data.inspectionPoints||[]
+  };
+  await cloudRequest('/rest/v1/rd_settings?on_conflict=org_id',{
+    method:'POST',
+    headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+    body:JSON.stringify([{org_id:c.orgId,payload,updated_at:new Date().toISOString()}])
+  });
+}
+async function structuredFetchSettings(){
+  const c=getCloudConfig();
+  const rows=await cloudRequest(`/rest/v1/rd_settings?org_id=eq.${encodeURIComponent(c.orgId)}&select=payload,updated_at&limit=1`);
+  return Array.isArray(rows)&&rows[0]?.payload?rows[0].payload:null;
+}
+function mergeCloudSettings(settings){
+  if(!settings)return;
+  if(settings.company)data.company={...(data.company||{}),...settings.company};
+  if(settings.season)data.season={...(data.season||{}),...settings.season};
+  if(settings.automation)data.automation={...(data.automation||{}),...settings.automation};
+  if(Array.isArray(settings.inspectionPoints))data.inspectionPoints=settings.inspectionPoints;
 }
 async function cloudLoadProfile(showAlert=true){
   const s=getCloudSession(),c=getCloudConfig();
@@ -3042,6 +3084,7 @@ async function structuredCloudPush(showAlert=true){
   try{
     const cols=pushCollectionsForRole(profile.role);
     for(const collection of cols)await structuredUpsertCollection(collection);
+    if(profile.role==='admin')await structuredUpsertSettings();
     const now=new Date().toISOString();
     localStorage.setItem('rd_cloud_last_sync',now);
     setCloudPill('connected','Cloud');
@@ -3069,7 +3112,9 @@ async function structuredCloudPull(showConfirm=true){
     localStorage.setItem('rd_pre_structured_pull_backup',JSON.stringify({savedAt:new Date().toISOString(),payload:data}));
     const cols=collectionsForRole(profile.role),pulled={};
     for(const collection of cols)pulled[collection]=await structuredFetchCollection(collection);
+    const cloudSettings=await structuredFetchSettings();
     mergeStructuredPull(profile.role,pulled);
+    mergeCloudSettings(cloudSettings);
     const now=new Date().toISOString();
     localStorage.setItem(STORAGE,JSON.stringify(data));
     localStorage.setItem('rd_cloud_last_sync',now);
@@ -3392,7 +3437,7 @@ function showLoginScreen(message=''){
   const cfg=getCloudConfig();
   if(qs('#appCloudLoginHint')){
     qs('#appCloudLoginHint').textContent=(cfg.url&&cfg.anonKey)
-      ? 'Cloud ist eingerichtet. Melde dich an oder erstelle dein eingeladenes Konto.'
+      ? 'Produktiv-Cloud ist aktiv. Das Firmenkonto info@rd-homemaster.de kann zuerst erstellt werden; weitere Konten benötigen eine Einladung.'
       : 'Cloud-Zugang ist noch nicht eingerichtet.';
   }
 }
@@ -3404,6 +3449,7 @@ function unlockApp(){
   showView(firstAllowedView());
 }
 window.demoAppLogin=function(id){
+  if(PRODUCTION_MODE)return;
   const u=data.users.find(x=>Number(x.id)===Number(id)&&x.active!==false);
   if(!u)return;
   activeSessionUserId=Number(u.id);
@@ -3490,7 +3536,7 @@ async function appCloudSignup(){
       msg.className='login-message success';
     }
   }catch(err){
-    msg.textContent='Konto konnte nicht erstellt werden: '+err.message;
+    msg.textContent='Konto konnte nicht erstellt werden. Prüfe, ob diese E-Mail als Firmenkonto oder Einladung freigeschaltet ist. '+err.message;
     msg.className='login-message';
   }
 }
