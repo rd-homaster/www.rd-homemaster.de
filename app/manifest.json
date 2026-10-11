@@ -1,7 +1,7 @@
 {
-  "name": "Hausmeister",
-  "short_name": "Hausmeister",
-  "description": "Hausmeister Betriebs-App mit Cloud-Synchronisierung, Einsatzplanung, Kontrollen, Berichten, Mitarbeitereinsätzen und sicherer Kontoverwaltung.",
+  "name": "RD Homemaster Hausmeisterservice",
+  "short_name": "RD Homemaster",
+  "description": "Interne Betriebs-App für RD Homemaster Hausmeisterservice: Chef, Mitarbeiter, Aufträge, Objekte, Kontrollen und Berichte.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
