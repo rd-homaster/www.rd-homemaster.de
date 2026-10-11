@@ -1891,6 +1891,7 @@ body.role-employee .rd-workspace-shortcuts button[data-view-link="reports"]{disp
 @media(max-width:520px){.rd-workspace-hero{padding:24px 19px}.rd-workspace-hero-actions{width:100%}.rd-workspace-hero-actions button{flex:1}.rd-workspace-shortcuts{gap:10px}.rd-workspace-shortcuts button{padding:16px 13px}}
 
 </style>
+  <link rel="stylesheet" href="premium-startseite.css">
 </head>
 <body>
 <div id="insecureConnectionBanner" style="display:none;position:fixed;left:10px;right:10px;top:10px;z-index:99999;background:#fff3cd;border:1px solid #e0b94b;color:#634b00;padding:12px 14px;border-radius:12px;font:700 13px/1.4 Arial,sans-serif">
@@ -1902,84 +1903,150 @@ body.role-employee .rd-workspace-shortcuts button[data-view-link="reports"]{disp
   }
 </script>
 
+
 <div id="loginScreen" class="login-screen">
-  <div class="rd-landing">
-    <header class="rd-top">
-      <img src="rd-homemaster-logo.svg" alt="RD Homemaster Hausmeisterservice" class="rd-logo">
-      <div class="rd-toplinks"><a href="https://www.rd-homemaster.de/">Website</a><a href="#rd-accounts">Anmelden ↗</a></div>
-    </header>
-    <main class="rd-content">
-      <section class="rd-intro">
-        <p class="rd-kicker">RD Homemaster · Digitales Serviceportal</p>
-        <h1>Alles im Blick.<br><span>Alles im Griff.</span></h1>
-        <p class="rd-lead">Ihr direkter Zugang zu unseren Dienstleistungen. Aufträge, Dokumentationen und Einsätze – übersichtlich an einem Ort.</p>
-        <div class="rd-hero-actions">
-          <button type="button" class="rd-action rd-primary" onclick="rdChoosePortal('kunde')">Kunden-Login öffnen →</button>
-          <button type="button" class="rd-action rd-outline" onclick="rdChoosePortal('mitarbeiter')">Mitarbeiter-Login</button>
+  <header class="prem-container prem-nav">
+    <div class="prem-brand">
+      <img src="rd-homemaster-logo.svg" alt="RD Homemaster Hausmeisterservice">
+      <span class="prem-brand-label">DIGITALES<br>SERVICEPORTAL</span>
+    </div>
+    <nav class="prem-nav-links" aria-label="Hauptnavigation">
+      <a href="#prem-vorteile">Plattform</a>
+      <a href="#prem-portale">Zugänge</a>
+      <a href="https://www.rd-homemaster.de/">Zur Website</a>
+      <a class="prem-signin" href="#prem-portale">Zum Login ↗</a>
+    </nav>
+  </header>
+  <main>
+    <section class="prem-container prem-hero" aria-labelledby="premHeroTitle">
+      <div>
+        <div class="prem-eyebrow">RD HOMEMASTER · SERVICEPORTAL</div>
+        <h1 id="premHeroTitle">Service, der<br>einfach <span>funktioniert.</span></h1>
+        <p class="prem-intro">Eine Plattform für klare Abläufe und persönliche Betreuung. Verwalten Sie Serviceanfragen, behalten Sie den Überblick über Ihre Objekte und organisieren Sie Einsätze – unkompliziert an einem Ort.</p>
+        <div class="prem-actions">
+          <button type="button" class="prem-btn prem-btn-dark" onclick="premOpenLogin('kunde')">Kundenportal öffnen &nbsp; ↗</button>
+          <button type="button" class="prem-btn" onclick="premOpenLogin('mitarbeiter')">Mitarbeiter anmelden &nbsp; →</button>
         </div>
-        <div class="rd-trust"><span>✓ Übersichtliche Abläufe</span><span>✓ Mobil nutzbar</span><span>✓ Geschützter Zugang</span></div>
-      </section>
-      <div class="rd-preview" aria-label="Vorschau der App-Oberfläche">
-        <div class="rd-preview-top"><strong>Serviceübersicht</strong><span>RD Homemaster</span></div>
-        <h2>Willkommen!</h2><p>Alles Wichtige an einem Ort.</p>
-        <div class="rd-preview-grid">
-          <div><strong>Aufträge</strong><small>Überblick & Status</small></div>
-          <div><strong>Objekte</strong><small>Betreuung & Service</small></div>
-          <div><strong>Berichte</strong><small>Dokumentation</small></div>
-        </div>
-        <div class="rd-preview-line"><span>●</span> Auftragsverwaltung <small>Übersichtlich</small></div>
-        <div class="rd-preview-line"><span>●</span> Digitale Arbeitsberichte <small>Dokumentiert</small></div>
-        <div class="rd-preview-line"><span>●</span> Mobile Einsatzplanung <small>Flexibel</small></div>
+        <div class="prem-proof"><span>Persönlicher Zugang</span><span>Klare Abläufe</span><span>Mobil nutzbar</span></div>
       </div>
-    </main>
-    <section id="rd-accounts" class="rd-accounts">
-      <div class="rd-heading"><p class="rd-kicker">Zwei Zugänge</p><h2>Der passende Zugang für Sie.</h2><p>Kunden und Mitarbeiter erhalten getrennte Anmeldebereiche.</p></div>
-      <div class="rd-cards">
-        <article class="rd-account"><div class="rd-icon">♙</div><h3>Kunden-Login</h3><p>Serviceanfragen, eigene Objekte, Auftragsstatus und Berichte.</p><button type="button" class="rd-action rd-primary" onclick="rdChoosePortal('kunde')">Zum Kunden-Login →</button></article>
-        <article class="rd-account"><div class="rd-icon">▤</div><h3>Mitarbeiter-Login</h3><p>Eigene Einsätze, Tagesplanung, Zeiterfassung und Dokumentationen.</p><button type="button" class="rd-action rd-outline" onclick="rdChoosePortal('mitarbeiter')">Zum Mitarbeiter-Login →</button></article>
+      <div class="prem-visual">
+        <div class="prem-glass">
+          <div class="prem-glass-top"><strong>Serviceübersicht</strong><small>RD HOMEMASTER / APP</small></div>
+          <h3>Alles an einem Ort.</h3>
+          <p>Ihre Aufgaben und Informationen im Überblick.</p>
+          <div class="prem-service-row">
+            <div class="prem-service-icon">▤</div>
+            <div class="prem-service-copy"><strong>Auftragsverwaltung</strong><small>Einfach planen und verfolgen</small></div>
+            <span class="prem-service-arr">↗</span>
+          </div>
+          <div class="prem-service-row">
+            <div class="prem-service-icon">⌂</div>
+            <div class="prem-service-copy"><strong>Objektbetreuung</strong><small>Immobilien und Vorgänge im Blick</small></div>
+            <span class="prem-service-arr">↗</span>
+          </div>
+          <div class="prem-service-row">
+            <div class="prem-service-icon">◫</div>
+            <div class="prem-service-copy"><strong>Digitale Dokumentation</strong><small>Übersichtlich und nachvollziehbar</small></div>
+            <span class="prem-service-arr">↗</span>
+          </div>
+        </div>
+        <small class="prem-visual-note">ILLUSTRATIVE ANSICHT</small>
       </div>
     </section>
-    <footer class="rd-footer">© RD Homemaster Hausmeisterservice · <a href="https://www.rd-homemaster.de/">Zur Firmenwebsite</a></footer>
-  </div>
-  <div class="rd-login-overlay" id="rdLoginOverlay" hidden>
-    <section class="login-card rd-login-card" role="dialog" aria-modal="true" aria-labelledby="rdLoginTitle">
-      <button class="rd-close" type="button" onclick="rdClosePortal()" aria-label="Schließen">×</button>
-      <div class="login-card-head"><img src="rd-homemaster-logo.svg" alt="RD Homemaster Hausmeisterservice" class="rd-modal-logo"></div>
-      <h2 id="rdLoginTitle">Mitarbeiter-Login</h2>
-      <p id="rdLoginSubtitle">Bitte mit Ihrem Benutzerkonto anmelden.</p>
-      <div class="rd-role-tabs">
-        <button type="button" id="rdCustomerTab" onclick="rdChoosePortal('kunde')">Kunde</button>
-        <button type="button" id="rdEmployeeTab" onclick="rdChoosePortal('mitarbeiter')">Mitarbeiter</button>
+    <section class="prem-section" id="prem-portale">
+      <div class="prem-container">
+        <div class="prem-section-head">
+          <div><div class="prem-eyebrow">INDIVIDUELLER ZUGANG</div><h2>Ein Portal.<br>Zwei Zugänge.</h2></div>
+          <p>Ob Serviceanfrage oder Einsatzplanung: Der jeweilige Zugang ist auf die Aufgaben seiner Nutzer ausgerichtet.</p>
+        </div>
+        <div class="prem-portal-grid">
+          <article class="prem-portal">
+            <div class="prem-portal-num">01 / KUNDEN<i></i></div>
+            <h3>Für unsere Kunden.</h3>
+            <p>Ihre betreuten Objekte, Serviceanfragen, Auftragsinformationen und Dokumentationen übersichtlich an einem Ort.</p>
+            <button type="button" onclick="premOpenLogin('kunde')">Kunden-Login öffnen &nbsp; ↗</button>
+          </article>
+          <article class="prem-portal">
+            <div class="prem-portal-num">02 / TEAM<i></i></div>
+            <h3>Für unsere Mitarbeiter.</h3>
+            <p>Ihre Aufgaben, geplanten Einsätze und Arbeitsdokumentationen – strukturiert und unterwegs erreichbar.</p>
+            <button type="button" onclick="premOpenLogin('mitarbeiter')">Mitarbeiter-Login öffnen &nbsp; ↗</button>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="prem-bottom" id="prem-vorteile">
+      <div class="prem-container prem-bottom-inner">
+        <div><h2>RD Homemaster. Digital organisiert.</h2><p>Einfacher Zugang. Klare Zuständigkeiten. Professioneller Service.</p></div>
+        <button type="button" class="prem-btn" onclick="premOpenLogin('mitarbeiter')">Zum Serviceportal →</button>
+      </div>
+    </section>
+  </main>
+  <footer class="prem-footer">
+    <div class="prem-container prem-footflex">
+      <span>© RD Homemaster Hausmeisterservice</span>
+      <a href="https://www.rd-homemaster.de/">Zur Firmenwebsite</a>
+    </div>
+  </footer>
+  <div class="prem-overlay" id="premOverlay" hidden onclick="if(event.target===this)premCloseLogin()">
+    <section class="prem-modal" role="dialog" aria-modal="true" aria-labelledby="premLoginTitle">
+      <button class="prem-close" type="button" aria-label="Schließen" onclick="premCloseLogin()">×</button>
+      <img class="prem-modal-logo" src="rd-homemaster-logo.svg" alt="RD Homemaster Logo">
+      <div class="prem-eyebrow">PERSÖNLICHER ZUGANG</div>
+      <h3 id="premLoginTitle">Mitarbeiter-Login</h3>
+      <p id="premLoginDescription">Mit Ihren persönlichen Zugangsdaten anmelden.</p>
+      <div class="prem-switch" role="group" aria-label="Zugang auswählen">
+        <button id="premTabKunde" type="button" onclick="premChooseRole('kunde')">Kunde</button>
+        <button id="premTabMitarbeiter" type="button" onclick="premChooseRole('mitarbeiter')">Mitarbeiter</button>
       </div>
       <div id="login-cloud-pane" class="login-pane active">
-        <label>E-Mail-Adresse<input id="appLoginEmail" type="email" autocomplete="username" placeholder="name@beispiel.de"></label>
-        <label>Passwort<div class="password-field"><input id="appLoginPassword" type="password" autocomplete="current-password" placeholder="Passwort"><button type="button" id="toggleLoginPassword">Anzeigen</button></div></label>
-        <div class="login-actions">
-          <button class="primary-btn login-main-btn" id="appCloudLoginBtn">Anmelden</button>
-          <button class="ghost-btn login-secondary-btn" id="appCloudSignupBtn" hidden>Konto erstellen</button>
+        <label for="appLoginEmail">E-Mail-Adresse</label>
+        <input type="email" id="appLoginEmail" autocomplete="username" placeholder="name@beispiel.de">
+        <label for="appLoginPassword">Passwort</label>
+        <div class="password-field">
+          <input type="password" id="appLoginPassword" autocomplete="current-password" placeholder="Passwort">
+          <button type="button" id="toggleLoginPassword">Anzeigen</button>
         </div>
-        <div id="appCloudLoginHint" class="login-hint">Mitarbeiter melden sich mit ihrem freigeschalteten Konto an.</div>
+        <div class="login-actions">
+          <button type="button" class="prem-btn prem-btn-dark" id="appCloudLoginBtn">Anmelden →</button>
+          <button type="button" id="appCloudSignupBtn" hidden>Konto erstellen</button>
+        </div>
+        <div class="prem-hint" id="appCloudLoginHint" aria-live="polite">Bitte mit einem freigeschalteten Mitarbeiterkonto anmelden.</div>
       </div>
-      <div id="loginMessage" class="login-message"></div>
-      <p class="login-footer">RD Homemaster Hausmeisterservice</p>
+      <div id="loginMessage" class="login-message" role="status"></div>
     </section>
   </div>
 </div>
 <script>
-window.rdChoosePortal = function(role){
+window.premiumCurrentRole='mitarbeiter';
+window.premChooseRole=function(role){
   var customer=role==='kunde';
-  var overlay=document.getElementById('rdLoginOverlay');
-  if(overlay) overlay.hidden=false;
-  document.getElementById('rdLoginTitle').textContent=customer?'Kunden-Login':'Mitarbeiter-Login';
-  document.getElementById('rdLoginSubtitle').textContent=customer?'Kundenportal – persönlicher Zugang':'Bitte mit Ihrem freigeschalteten Benutzerkonto anmelden.';
-  document.getElementById('rdCustomerTab').classList.toggle('active',customer);
-  document.getElementById('rdEmployeeTab').classList.toggle('active',!customer);
+  window.premiumCurrentRole=customer?'kunde':'mitarbeiter';
+  document.getElementById('premTabKunde').classList.toggle('on',customer);
+  document.getElementById('premTabMitarbeiter').classList.toggle('on',!customer);
+  document.getElementById('premLoginTitle').textContent=customer?'Kunden-Login':'Mitarbeiter-Login';
+  document.getElementById('premLoginDescription').textContent=customer?'Persönlicher Kundenbereich':'Mit Ihren persönlichen Zugangsdaten anmelden.';
+  document.getElementById('appLoginEmail').disabled=customer;
+  document.getElementById('appLoginPassword').disabled=customer;
   document.getElementById('appCloudLoginBtn').disabled=customer;
-  var hint=document.getElementById('appCloudLoginHint');
-  if(hint)hint.textContent=customer?'Der Kunden-Login wird eingerichtet und ist noch nicht freigeschaltet.':'Chef und Mitarbeiter melden sich hier mit ihren bestehenden Zugangsdaten an.';
-  var msg=document.getElementById('loginMessage'); if(msg)msg.textContent='';
+  document.getElementById('toggleLoginPassword').disabled=customer;
+  document.getElementById('appCloudLoginHint').textContent=customer
+    ?'Der Kunden-Login ist derzeit noch nicht freigeschaltet. Hier werden noch keine Zugangsdaten entgegengenommen.'
+    :'Bitte melden Sie sich mit Ihrem freigeschalteten Firmenkonto an.';
+  document.getElementById('loginMessage').textContent='';
 };
-window.rdClosePortal=function(){document.getElementById('rdLoginOverlay').hidden=true;};
+window.premOpenLogin=function(role){
+  window.premChooseRole(role);
+  document.getElementById('premOverlay').hidden=false;
+  if(role==='mitarbeiter')requestAnimationFrame(function(){document.getElementById('appLoginEmail').focus()});
+};
+window.premCloseLogin=function(){
+  document.getElementById('premOverlay').hidden=true;
+  document.getElementById('loginMessage').textContent='';
+};
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape' && !document.getElementById('premOverlay').hidden)window.premCloseLogin();
+});
 </script>
 <div class="app-shell">
   <aside class="sidebar">
@@ -4267,7 +4334,7 @@ function showLoginScreen(message=''){
   const cfg=getCloudConfig();
   if(qs('#appCloudLoginHint')){
     qs('#appCloudLoginHint').textContent=(cfg.url&&cfg.anonKey)
-      ? 'Interner Firmenzugang: Chef und freigeschaltete Mitarbeiter. Mitarbeiter werden vom Chef eingeladen.'
+      ? 'Bitte mit einem freigeschalteten Firmenkonto anmelden.'
       : 'Cloud-Zugang ist noch nicht eingerichtet.';
   }
 }
@@ -4295,6 +4362,10 @@ window.demoAppLogin=function(id){
   unlockApp();
 }
 async function appCloudLogin(){
+  if(window.premiumCurrentRole==='kunde'){
+    const m=qs('#loginMessage'); if(m)m.textContent='Der Kunden-Login ist noch nicht freigeschaltet.';
+    return;
+  }
   const cfg=getCloudConfig();
   const email=qs('#appLoginEmail').value.trim();
   const password=qs('#appLoginPassword').value;
