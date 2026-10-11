@@ -1,7 +1,7 @@
 {
   "name": "Hausmeister",
   "short_name": "Hausmeister",
-  "description": "Hausmeister Betriebs-App für Aufträge, Objekte, Kontrollen, Berichte, Wartungspläne und Mitarbeitereinsätze.",
+  "description": "Hausmeister Betriebs-App mit Cloud-Synchronisierung, Aufträgen, Objekten, Kontrollen, Berichten und Mitarbeitereinsätzen.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
