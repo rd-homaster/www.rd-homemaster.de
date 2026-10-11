@@ -1342,6 +1342,18 @@ body.login-locked .login-screen{display:flex}
   .home-stat-grid,.home-main-grid,.home-secondary-grid{margin-bottom:9px}
 }
 
+
+/* V1.2.3 – Mitarbeiterverwaltung */
+#view-employees .section-intro>div>p:last-child{margin:5px 0 0;color:var(--muted)}
+#view-employees .section-intro h2{font-size:24px}
+.employee-empty{grid-column:1/-1;min-height:300px;border:1px dashed #bfd0e3;border-radius:20px;background:linear-gradient(145deg,#fff,#f7fbff);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;box-shadow:var(--shadow)}
+.employee-empty-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:17px;background:#eaf4ff;color:#2474c8;font-size:27px;margin-bottom:12px}
+.employee-empty h3{margin:0 0 7px;font-size:20px}.employee-empty p{max-width:460px;margin:0 0 17px;color:var(--muted);line-height:1.5}
+.employee-card-click{cursor:pointer;transition:.18s ease}.employee-card-click:hover{transform:translateY(-2px);border-color:#bfd6f3}
+.employee-card-click .top>div p{margin:4px 0 0}.employee-contact-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.employee-contact-line span{background:#f3f7fb;border-radius:8px;padding:5px 7px;font-size:10px;color:#597087}
+.modal-help{margin:7px 0 0;padding:8px 10px;background:#f4f8fc;border-radius:9px;color:var(--muted);font-size:10px;line-height:1.4}
+@media(max-width:760px){#view-employees .section-intro{gap:10px}#view-employees .section-intro .primary-btn{white-space:nowrap}.employee-empty{min-height:230px;padding:24px 18px}}
 </style>
 </head>
 <body>
@@ -1428,7 +1440,7 @@ body.login-locked .login-screen{display:flex}
         <div class="avatar" id="sessionAvatar">H</div>
         <div><strong id="sessionUserName">Ricardo Dias</strong><span id="sessionUserRole">Administrator</span></div>
       </div>
-      <div class="sidebar-version">Hausmeister · Version 1.2.2</div>
+      <div class="sidebar-version">Hausmeister · Version 1.2.3</div>
     </div>
   </aside>
 
@@ -1712,7 +1724,14 @@ body.login-locked .login-screen{display:flex}
     </section>
 
     <section id="view-employees" class="view">
-      <div class="section-intro"><p>Mitarbeiter, Rollen und aktuelle Einsätze.</p><button class="primary-btn">+ Mitarbeiter</button></div>
+      <div class="section-intro">
+        <div>
+          <p class="eyebrow">TEAM</p>
+          <h2>Mitarbeiter verwalten</h2>
+          <p>Mitarbeiter anlegen, Zugänge vorbereiten und heutige Einsätze im Blick behalten.</p>
+        </div>
+        <button class="primary-btn" id="newEmployeeBtn">+ Mitarbeiter</button>
+      </div>
       <div id="employeesGrid" class="entity-grid"></div>
     </section>
 
@@ -2800,7 +2819,7 @@ body.login-locked .login-screen{display:flex}
 
 <script>
 const STORAGE='hausmeister_app_v10';
-const APP_VERSION='1.2.2';
+const APP_VERSION='1.2.3';
 const PRODUCTION_MODE=true;
 const PROD_INIT_KEY='hausmeister_production_initialized_v1';
 function localISODate(d=new Date()){
@@ -4572,11 +4591,31 @@ qs('#fieldRouteMapBtn').onclick=()=>{
 };
 
 function renderEmployees(){
-  qs('#employeesGrid').innerHTML=data.employees.map(e=>{
+  const grid=qs('#employeesGrid');if(!grid)return;
+  if(!data.employees.length){
+    grid.innerHTML=`<div class="employee-empty">
+      <div class="employee-empty-icon">♟</div>
+      <h3>Noch keine Mitarbeiter angelegt</h3>
+      <p>Lege den ersten Mitarbeiter an. Optional kannst du direkt eine E-Mail für den App-Zugang hinterlegen.</p>
+      <button class="primary-btn" onclick="openModal('employee')">+ Ersten Mitarbeiter anlegen</button>
+    </div>`;
+    return;
+  }
+  grid.innerHTML=data.employees.map(e=>{
     const jobs=data.jobs.filter(j=>j.date===TODAY&&employeeMatchesJob(e,j));
     const open=jobs.filter(j=>j.status!=='done').length;
-    return `<article class="entity-card employee-card-click" onclick="openEmployeeDetail(${e.id})"><div class="top"><h3>${e.name}</h3><span class="status ${open?'progress':'done'}">${open?open+' offen':'fertig'}</span></div>
-      <p>${e.role}</p><div class="entity-meta"><span><b>Heute:</b> ${jobs.length} Einsatz/Einsätze</span><span><b>Erledigt:</b> ${jobs.filter(j=>j.status==='done').length}</span></div></article>`;
+    const done=jobs.filter(j=>j.status==='done').length;
+    return `<article class="entity-card employee-card-click" onclick="openEmployeeDetail(${e.id})">
+      <div class="top">
+        <div><h3>${e.name}</h3><p>${e.role||'Mitarbeiter'}</p></div>
+        <span class="status ${open?'progress':'done'}">${open?open+' offen':'bereit'}</span>
+      </div>
+      <div class="employee-contact-line">${e.email?`<span>✉ ${e.email}</span>`:''}${e.phone?`<span>☎ ${e.phone}</span>`:''}</div>
+      <div class="entity-meta">
+        <span><b>Status:</b> ${e.status||'Verfügbar'}</span>
+        <span><b>Heute:</b> ${jobs.length} Einsatz${jobs.length===1?'':'e'} · ${done} erledigt</span>
+      </div>
+    </article>`;
   }).join('');
 }
 window.openEmployeeDetail=function(id){
@@ -5520,7 +5559,7 @@ qs('#userForm').addEventListener('submit',async e=>{
 });
 
 function openModal(type){
-  const adminOnlyTypes=['job','object','customer','maintenance','plan'];
+  const adminOnlyTypes=['job','object','customer','employee','maintenance','plan'];
   if(adminOnlyTypes.includes(type)&&sessionUser()?.role!=='admin')return;
   qs('#modal').dataset.type=type;
   const objectOptions=data.objects.map(o=>`<option>${o.name}</option>`).join('');
@@ -5529,6 +5568,7 @@ function openModal(type){
     job:['Neuer Auftrag',`<label>Aufgabe<input name="title" required placeholder="z. B. Rasenmähen"></label><label>Objekt<select name="object">${objectOptions}</select></label><label>Datum<input name="date" type="date" value="${TODAY}"></label><label>Uhrzeit<input name="time" type="time" value="09:00"></label><label>Mitarbeiter<select name="employee">${employeeOptions}</select></label><label>Priorität<select name="priority"><option value="normal">Normal</option><option value="high">Hoch</option><option value="urgent">Dringend</option></select></label>`],
     object:['Neues Objekt',`<label>Objektname<input name="name" required placeholder="Musterstraße 12"></label><label>Typ<input name="type" placeholder="Mehrfamilienhaus"></label><label>Adresse<input name="address"></label>`],
     customer:['Neuer Kunde',`<label>Kunde/Firma<input name="name" required></label><label>Ansprechpartner<input name="contact"></label><label>Telefon<input name="phone"></label><label>E-Mail<input name="mail"></label>`],
+    employee:['Mitarbeiter hinzufügen',`<label>Name<input name="name" required placeholder="Vorname Nachname"></label><label>Funktion<input name="role" value="Mitarbeiter" placeholder="z. B. Hausmeister"></label><label>E-Mail für App-Zugang<input name="email" type="email" placeholder="mitarbeiter@beispiel.de"></label><label>Telefon<input name="phone" type="tel" placeholder="+49 …"></label><label>Status<select name="status"><option value="Verfügbar">Verfügbar</option><option value="Im Einsatz">Im Einsatz</option><option value="Abwesend">Abwesend</option></select></label><p class="modal-help">Wenn eine E-Mail eingetragen wird, wird automatisch ein Mitarbeiter-Zugang vorbereitet.</p>`],
     maintenance:['Wartungsaufgabe hinzufügen',`<label>Aufgabe<input name="title" required></label><label>Objekt<select name="object">${objectOptions}</select></label><label>Nächster Termin<input name="next" type="date" value="${addDays(TODAY,1)}"></label><label>Wiederholung<input name="rule" value="nach Vereinbarung"></label>`],
     plan:['Leistungsplan hinzufügen',`<label>Objekt<select name="object">${objectOptions}</select></label><label>Leistung<input name="title" required></label><label>Sommer-Rhythmus<select name="summerRule"><option value="7">jede Woche</option><option value="14" selected>alle 14 Tage</option><option value="30">monatlich</option><option value="0">nach Bedarf</option></select></label><label>Winter-Rhythmus<select name="winterRule"><option value="7" selected>jede Woche</option><option value="14">alle 14 Tage</option><option value="30">monatlich</option><option value="0">pausiert / nach Bedarf</option></select></label><label>Nächster Termin<input name="next" type="date" value="${addDays(TODAY,1)}"></label><label>Mitarbeiter<select name="employee">${employeeOptions}</select></label><label>Uhrzeit<input name="time" type="time" value="09:00"></label>`],
     defect:['Mangel melden',`<label>Objekt<select name="object">${objectOptions}</select></label><label>Mangel<input name="title" required></label><label>Priorität<select name="priority"><option>Niedrig</option><option selected>Normal</option><option>Hoch</option></select></label><label>Beschreibung<input name="description"></label>`],
@@ -5540,12 +5580,13 @@ function openModal(type){
 qs('#newJobBtn').onclick=()=>{if(sessionUser()?.role==='admin')openModal('job')};
 qs('#newObjectBtn').onclick=()=>openModal('object');
 qs('#newCustomerBtn').onclick=()=>openModal('customer');
+qs('#newEmployeeBtn').onclick=()=>openModal('employee');
 qs('#newMaintenanceBtn').onclick=()=>openModal('maintenance');
 qs('#newPlanBtn').onclick=()=>openModal('plan');
 qs('#newDefectBtn').onclick=()=>openModal('defect');
 qsa('.quick-action').forEach(b=>{if(b.dataset.quick)b.onclick=()=>openModal(b.dataset.quick)});
 
-qs('#modalForm').addEventListener('submit',e=>{
+qs('#modalForm').addEventListener('submit',async e=>{
   if(e.submitter?.value==='cancel')return;e.preventDefault();
   const fd=new FormData(e.currentTarget),type=qs('#modal').dataset.type;
   if(type==='job'){
@@ -5555,6 +5596,32 @@ qs('#modalForm').addEventListener('submit',e=>{
     data.objects.push({id:Date.now(),name:fd.get('name'),type:fd.get('type')||'Objekt',customer:'Noch nicht zugeordnet',open:0,address:fd.get('address')||'',keyInfo:'',accessCode:'',accessNotes:'',photos:[]});
   }else if(type==='customer'){
     data.customers.push({id:Date.now(),name:fd.get('name'),contact:fd.get('contact')||'',phone:fd.get('phone')||'',mail:fd.get('mail')||'',objects:0});
+  }else if(type==='employee'){
+    const employeeId=Date.now();
+    const email=String(fd.get('email')||'').trim();
+    const employee={
+      id:employeeId,
+      name:String(fd.get('name')||'').trim(),
+      role:String(fd.get('role')||'Mitarbeiter').trim()||'Mitarbeiter',
+      status:String(fd.get('status')||'Verfügbar'),
+      email,
+      phone:String(fd.get('phone')||'').trim()
+    };
+    data.employees.push(employee);
+    let accessUser=null;
+    if(email){
+      accessUser={id:employeeId+1,name:employee.name,email,role:'employee',active:true,employeeId};
+      const existing=data.users.find(u=>String(u.email||'').toLowerCase()===email.toLowerCase());
+      if(!existing)data.users.push(accessUser);else accessUser=null;
+    }
+    save();render();qs('#modal').close();e.currentTarget.reset();
+    if(accessUser&&cloudReady()){
+      const invited=await createCloudInviteForUser(accessUser).catch(()=>false);
+      alert(invited
+        ? 'Mitarbeiter wurde angelegt. Der App-Zugang ist vorbereitet.'
+        : 'Mitarbeiter wurde angelegt. Der Cloud-Zugang konnte noch nicht vorbereitet werden.');
+    }
+    return;
   }else if(type==='maintenance'){
     data.maintenance.push({id:Date.now(),title:fd.get('title'),object:fd.get('object'),next:fd.get('next'),rule:fd.get('rule')||'nach Vereinbarung',type:'custom',remindDays:1,active:true});
   }else if(type==='plan'){
