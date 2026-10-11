@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="t d">
+<title id="t">RD Homemaster Hausmeisterservice</title>
+<desc id="d">Firmenlogo mit Hausdach, RD Homemaster Schriftzug und Hausmeisterservice.</desc>
+<rect width="1200" height="620" fill="#ffffff"/>
+<g fill="none" stroke="#111820" stroke-width="32" stroke-linecap="square" stroke-linejoin="miter">
+<path d="M120 305 L600 88 L1080 305"/>
+<path d="M170 305 L600 155 L1030 305"/>
+<path d="M845 150 V96 H935 V245"/>
+</g>
+<text x="600" y="405" text-anchor="middle" font-family="Arial Black,Arial,Helvetica,sans-serif" font-size="108" font-weight="900" letter-spacing="-6" fill="#111820">RD HOMEMASTER</text>
+<rect x="120" y="438" width="480" height="34" fill="#ff7a00"/>
+<rect x="600" y="438" width="480" height="34" fill="#57b7ea"/>
+<rect x="120" y="532" width="145" height="17" fill="#111820"/>
+<rect x="935" y="532" width="145" height="17" fill="#111820"/>
+<text x="600" y="560" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="57" font-weight="800" letter-spacing="3" fill="#111820">HAUSMEISTERSERVICE</text>
+</svg>
