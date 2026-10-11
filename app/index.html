@@ -1354,6 +1354,30 @@ body.login-locked .login-screen{display:flex}
 .employee-contact-line span{background:#f3f7fb;border-radius:8px;padding:5px 7px;font-size:10px;color:#597087}
 .modal-help{margin:7px 0 0;padding:8px 10px;background:#f4f8fc;border-radius:9px;color:var(--muted);font-size:10px;line-height:1.4}
 @media(max-width:760px){#view-employees .section-intro{gap:10px}#view-employees .section-intro .primary-btn{white-space:nowrap}.employee-empty{min-height:230px;padding:24px 18px}}
+
+/* V1.2.4 – Sidebar bleibt vollständig dunkel/blau */
+.sidebar{overflow:hidden}
+.side-nav{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:3px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
+.side-nav::-webkit-scrollbar{width:5px}
+.side-nav::-webkit-scrollbar-track{background:transparent}
+.side-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.22);border-radius:999px}
+.sidebar-bottom{flex:0 0 auto;margin-top:8px;padding-top:4px;background:transparent}
+.sidebar-bottom .nav-item{width:100%}
+.sidebar-bottom .user-card{margin-top:8px}
+.sidebar-version{padding-bottom:2px}
+.employee-share-box{margin-top:14px;padding:14px;border:1px solid #dce8f5;border-radius:14px;background:linear-gradient(145deg,#f8fbff,#eef6ff)}
+.employee-share-box h3{margin:3px 0 6px;font-size:16px}
+.employee-share-box p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}
+.employee-share-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+.employee-share-actions button{font-size:10px}
+.employee-access-state{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:5px 8px;border-radius:999px;background:#e9f8f0;color:#187a4a;font-size:9px;font-weight:800}
+.employee-access-state.missing{background:#fff4e6;color:#9b5a1d}
+.employee-detail-contact{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.employee-detail-contact>div{padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fafcff}
+.employee-detail-contact span{display:block;color:var(--muted);font-size:9px;margin-bottom:3px}
+.employee-detail-contact strong{font-size:11px;overflow-wrap:anywhere}
+@media(max-width:560px){.employee-detail-contact{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -1440,7 +1464,7 @@ body.login-locked .login-screen{display:flex}
         <div class="avatar" id="sessionAvatar">H</div>
         <div><strong id="sessionUserName">Ricardo Dias</strong><span id="sessionUserRole">Administrator</span></div>
       </div>
-      <div class="sidebar-version">Hausmeister · Version 1.2.3</div>
+      <div class="sidebar-version">Hausmeister · Version 1.2.4</div>
     </div>
   </aside>
 
@@ -2487,6 +2511,21 @@ body.login-locked .login-screen{display:flex}
       <button class="icon-btn" id="closeEmployeeDetail">×</button>
     </div>
     <div id="employeeDetailStats" class="employee-detail-stats"></div>
+    <div id="employeeDetailContact" class="employee-detail-contact"></div>
+
+    <div class="employee-share-box">
+      <span class="section-label">APP-ZUGANG</span>
+      <h3>Mitarbeiter-App weitergeben</h3>
+      <p id="employeeAccessInfo">Der Mitarbeiter bekommt einen eigenen Zugang und sieht seine zugewiesenen Arbeiten unter „Meine Arbeit“.</p>
+      <div id="employeeAccessState"></div>
+      <div class="employee-share-actions">
+        <button class="primary-btn" id="copyEmployeeAccessBtn">Zugangstext kopieren</button>
+        <button class="ghost-btn" id="copyEmployeeAppLinkBtn">App-Link kopieren</button>
+        <button class="ghost-btn" id="whatsappEmployeeAccessBtn">Per WhatsApp teilen</button>
+        <button class="ghost-btn" id="refreshEmployeeInviteBtn">Zugang freischalten</button>
+      </div>
+    </div>
+
     <div class="detail-section">
       <span class="section-label">HEUTIGE AUFTRÄGE</span>
       <div id="employeeDetailJobs" class="compact-list"></div>
@@ -2819,7 +2858,7 @@ body.login-locked .login-screen{display:flex}
 
 <script>
 const STORAGE='hausmeister_app_v10';
-const APP_VERSION='1.2.3';
+const APP_VERSION='1.2.4';
 const PRODUCTION_MODE=true;
 const PROD_INIT_KEY='hausmeister_production_initialized_v1';
 function localISODate(d=new Date()){
@@ -4618,15 +4657,98 @@ function renderEmployees(){
     </article>`;
   }).join('');
 }
+
+const EMPLOYEE_APP_URL='https://www.rd-homemaster.de/app/';
+let activeEmployeeDetailId=null;
+function employeeAccessUser(employee){
+  if(!employee)return null;
+  return data.users.find(u=>u.role==='employee'&&Number(u.employeeId)===Number(employee.id))
+    || data.users.find(u=>u.role==='employee'&&String(u.email||'').toLowerCase()===String(employee.email||'').toLowerCase());
+}
+function employeeAccessText(employee){
+  const email=employee?.email||employeeAccessUser(employee)?.email||'DEINE E-MAIL';
+  return `Hallo ${employee?.name||''},
+
+dein Zugang zur Hausmeister-App ist vorbereitet.
+
+1. Öffne diese Seite:
+${EMPLOYEE_APP_URL}
+
+2. Wähle „Konto erstellen“.
+3. Verwende diese E-Mail-Adresse:
+${email}
+4. Lege dein eigenes Passwort fest.
+5. Danach meldest du dich normal an.
+
+Deine täglichen Arbeiten findest du unter „Meine Arbeit“.
+Dort kannst du:
+• deinen Auftrag starten
+• die Navigation öffnen
+• Arbeitszeit erfassen
+• Mängel melden
+• Kontrollen durchführen
+• den Auftrag abschließen
+
+Auf dem Handy kannst du die App zum Startbildschirm hinzufügen:
+Android: Browser-Menü → „App installieren“ / „Zum Startbildschirm“
+iPhone: Safari → Teilen → „Zum Home-Bildschirm“
+
+Viele Grüße`;
+}
+async function copyTextSafe(textToCopy,okText='Kopiert.'){
+  try{await navigator.clipboard.writeText(textToCopy);alert(okText)}
+  catch{
+    const ta=document.createElement('textarea');ta.value=textToCopy;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');ta.remove();alert(okText)
+  }
+}
+window.copyEmployeeAccess=function(){
+  const e=data.employees.find(x=>Number(x.id)===Number(activeEmployeeDetailId));if(!e)return;
+  copyTextSafe(employeeAccessText(e),'Zugangstext wurde kopiert. Du kannst ihn jetzt dem Mitarbeiter schicken.');
+}
+window.copyEmployeeAppLink=function(){copyTextSafe(EMPLOYEE_APP_URL,'App-Link wurde kopiert.')}
+window.shareEmployeeWhatsApp=function(){
+  const e=data.employees.find(x=>Number(x.id)===Number(activeEmployeeDetailId));if(!e)return;
+  window.open(`https://wa.me/?text=${encodeURIComponent(employeeAccessText(e))}`,'_blank','noopener');
+}
+window.refreshEmployeeInvite=async function(){
+  const e=data.employees.find(x=>Number(x.id)===Number(activeEmployeeDetailId));if(!e)return;
+  if(!e.email){alert('Bei diesem Mitarbeiter ist noch keine E-Mail-Adresse hinterlegt.');return}
+  let u=employeeAccessUser(e);
+  if(!u){
+    u={id:Date.now(),name:e.name,email:e.email,role:'employee',active:true,employeeId:e.id};
+    data.users.push(u);save();
+  }
+  if(!cloudReady()){alert('Cloud ist derzeit nicht verbunden.');return}
+  const ok=await createCloudInviteForUser(u);
+  render();openEmployeeDetail(e.id);
+  alert(ok?'Der Mitarbeiter-Zugang ist freigeschaltet. Jetzt kannst du ihm den Zugangstext senden.':'Die Freischaltung konnte nicht erstellt werden. Prüfe Cloud & Sync.');
+}
+
 window.openEmployeeDetail=function(id){
   const e=data.employees.find(x=>x.id===id);if(!e)return;
-  const jobs=data.jobs.filter(j=>j.date===TODAY&&employeeMatchesJob(e,j)).sort((a,b)=>a.time.localeCompare(b.time));
+  activeEmployeeDetailId=id;
+  const jobs=data.jobs.filter(j=>j.date===TODAY&&employeeMatchesJob(e,j)).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const access=employeeAccessUser(e);
   qs('#employeeDetailName').textContent=e.name;
   qs('#employeeDetailStats').innerHTML=`<div><strong>${jobs.length}</strong><span>heute</span></div><div><strong>${jobs.filter(j=>j.status==='done').length}</strong><span>erledigt</span></div><div><strong>${jobs.reduce((a,j)=>a+(Number(j.hours)||0),0).toFixed(1)} h</strong><span>Arbeitszeit</span></div>`;
+  qs('#employeeDetailContact').innerHTML=`
+    <div><span>E-Mail</span><strong>${e.email||'Noch nicht hinterlegt'}</strong></div>
+    <div><span>Telefon</span><strong>${e.phone||'Noch nicht hinterlegt'}</strong></div>`;
+  qs('#employeeAccessState').innerHTML=e.email
+    ? `<span class="employee-access-state">${access?'✓ Zugang vorbereitet':'○ Zugang kann freigeschaltet werden'}</span>`
+    : `<span class="employee-access-state missing">E-Mail fehlt</span>`;
+  qs('#employeeAccessInfo').textContent=e.email
+    ? `Der Mitarbeiter registriert sich mit ${e.email} und sieht anschließend seine zugewiesenen Arbeiten unter „Meine Arbeit“.`
+    : 'Für einen eigenen Mitarbeiter-Zugang muss zuerst eine E-Mail-Adresse beim Mitarbeiter hinterlegt werden.';
   qs('#employeeDetailJobs').innerHTML=jobs.length?jobs.map(j=>`<div class="compact-item"><div><strong>${j.time} · ${j.title}</strong><span>${j.object}</span></div><button class="mini-btn" onclick="document.querySelector('#employeeDetailModal').close();openJobDetail(${j.id})">Öffnen</button></div>`).join(''):'<div class="empty">Keine Aufträge heute.</div>';
   qs('#employeeDetailModal').showModal();
 };
 qs('#closeEmployeeDetail').onclick=()=>qs('#employeeDetailModal').close();
+qs('#copyEmployeeAccessBtn').onclick=()=>copyEmployeeAccess();
+qs('#copyEmployeeAppLinkBtn').onclick=()=>copyEmployeeAppLink();
+qs('#whatsappEmployeeAccessBtn').onclick=()=>shareEmployeeWhatsApp();
+qs('#refreshEmployeeInviteBtn').onclick=()=>refreshEmployeeInvite();
 
 function renderObjects(){
   const allowed=allowedObjectNames();
