@@ -1725,6 +1725,32 @@ body.role-employee [data-view="customers"]{display:none!important}
   }
 }
 
+
+/* V1.3.2 – Mitarbeiter Push */
+.employee-push-banner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 0 14px;
+  padding:15px 17px;
+  border:1px solid #cfe2f7;
+  border-radius:16px;
+  background:linear-gradient(135deg,#eef7ff,#f8fbff);
+  box-shadow:0 8px 22px rgba(31,92,151,.07);
+}
+.employee-push-banner[hidden]{display:none!important}
+.employee-push-banner strong,.employee-push-banner span{display:block}
+.employee-push-banner strong{font-size:13px;color:#164d82}
+.employee-push-banner span{margin-top:4px;font-size:11px;line-height:1.45;color:#64778d;max-width:720px}
+.push-status-text{display:block;margin-top:6px;font-size:10px;color:#708197;text-align:right}
+.push-status-text.ok{color:#187a4a;font-weight:800}
+.push-status-text.warn{color:#a85e19;font-weight:800}
+@media(max-width:760px){
+  .employee-push-banner{align-items:flex-start;flex-direction:column}
+  .employee-push-banner .primary-btn{width:100%}
+  .push-status-text{text-align:left;width:100%}
+}
 </style>
 </head>
 <body>
@@ -1806,7 +1832,7 @@ body.role-employee [data-view="customers"]{display:none!important}
         <div class="avatar" id="sessionAvatar">H</div>
         <div><strong id="sessionUserName">Ricardo Dias</strong><span id="sessionUserRole">Administrator</span></div>
       </div>
-      <div class="sidebar-version">RD Homemaster · Version 1.3.1</div>
+      <div class="sidebar-version">RD Homemaster · Version 1.3.2</div>
     </div>
   </aside>
 
@@ -2108,6 +2134,14 @@ body.role-employee [data-view="customers"]{display:none!important}
 
 
     <section id="view-myday" class="view">
+      <section id="employeePushBanner" class="employee-push-banner" hidden>
+        <div>
+          <strong>🔔 Einsatz-Benachrichtigungen aufs Handy</strong>
+          <span id="employeePushBannerText">Aktiviere Push einmal auf diesem Gerät. Danach bekommst du neue Aufträge mit Aufgabe, Uhrzeit und Adresse direkt aufs Handy.</span>
+        </div>
+        <button class="primary-btn" id="enablePushFromMyDay">Benachrichtigungen aktivieren</button>
+      </section>
+
       <section class="field-hero">
         <div>
           <p class="field-overline">MEIN ARBEITSTAG</p>
@@ -2512,7 +2546,8 @@ body.role-employee [data-view="customers"]{display:none!important}
         </div>
         <div class="notification-actions">
           <button class="ghost-btn" id="markAllReadBtn">Alle als gelesen</button>
-          <button class="primary-btn" id="enablePushBtn">Browser-Erinnerungen aktivieren</button>
+          <button class="primary-btn" id="enablePushBtn">Handy-Benachrichtigungen aktivieren</button>
+          <span id="pushStatusText" class="push-status-text">Push-Status wird geprüft …</span>
         </div>
       </div>
 
@@ -3204,7 +3239,7 @@ body.role-employee [data-view="customers"]{display:none!important}
 
 <script>
 const STORAGE='hausmeister_app_v10';
-const APP_VERSION='1.3.1';
+const APP_VERSION='1.3.2';
 const PRODUCTION_MODE=true;
 const PROD_INIT_KEY='hausmeister_production_initialized_v1';
 function localISODate(d=new Date()){
@@ -4343,28 +4378,31 @@ function createJobFromPlan(plan){
     'Rasenmähen':[{t:'Rasenfläche mähen',d:false},{t:'Rasenkanten nacharbeiten',d:false},{t:'Schnittgut entfernen',d:false}],
     'Heckenschnitt':[{t:'Hecke / Sträucher schneiden',d:false},{t:'Schnittgut aufnehmen',d:false},{t:'Wege sauber hinterlassen',d:false}]
   };
-  data.jobs.push({
+  const job={
     id:Date.now()+Math.floor(Math.random()*100000),time:plan.time||'09:00',title:plan.title,
     object:plan.object,customer:obj?.customer||'',status:'open',
     employee:(plan.employee||'').split(' ')[0]||'Nicht zugeordnet',employeeFull:plan.employee||'',
     hours:0,timerSeconds:0,date:plan.next,priority:'normal',estimatedMinutes:60,
     checklist:clone(checklistMap[plan.title]||[{t:'Arbeit vorbereiten',d:false},{t:'Arbeit durchführen',d:false},{t:'Bereich sauber hinterlassen',d:false}]),
     notes:'',materialsUsed:[],source:'recurring',planId:plan.id,planDueDate:plan.next
-  });
+  };
+  data.jobs.push(job);
+  return job;
 }
 function syncRecurringJobs(showMessage=false){
   if(!data.automation.enabled){if(showMessage)alert('Die Auftragsautomatik ist ausgeschaltet.');return 0}
   let created=0;
+  const createdJobs=[];
   const lead=Number(data.automation.leadDays||0);
   data.plans.filter(p=>p.active).forEach(plan=>{
     plan.next=nextAllowedPlanDate(plan,plan.next);
     const days=getPlanRuleDays(plan,plan.next);
     if(!days)return;
     if(TODAY>=addDays(plan.next,-lead)&&!planJobExists(plan)){
-      createJobFromPlan(plan);created++;
+      const job=createJobFromPlan(plan);if(job){created++;createdJobs.push(job)}
     }
   });
-  if(created)save();
+  if(created){save();syncNewJobsAndNotify(createdJobs,false)}
   if(showMessage)alert(created?`${created} Auftrag / Aufträge wurden automatisch angelegt.`:'Alle fälligen Aufträge sind bereits vorhanden.');
   return created;
 }
@@ -4460,6 +4498,8 @@ function render(){
   renderUsers();
   renderCloudUI();
   if(qs('#view-object-detail')?.classList.contains('active')&&activeObjectId)renderObjectDetail();
+  updatePushUI().catch(()=>{});
+  maybeOpenPushJob();
 }
 
 function renderDashboard(){
@@ -5717,6 +5757,196 @@ qs('#printReportBtn').onclick=()=>{document.body.classList.add('printing-report'
 
 
 
+
+const WEB_PUSH_PUBLIC_KEY='BO9QcuUo2zKKQQ13IwzhkqwGBplHeM1NWB3OZpmsRWbIF6ixBYxs4cLi1BafuqkHymYIhKBPMs5yEwpbQD37cJo';
+
+function webPushKeyToBytes(base64String){
+  const padding='='.repeat((4-base64String.length%4)%4);
+  const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  const raw=atob(base64);
+  return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));
+}
+function isIOSDevice(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+}
+function isStandaloneApp(){
+  return window.matchMedia?.('(display-mode: standalone)')?.matches || window.navigator.standalone===true;
+}
+async function currentPushSubscription(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))return null;
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    return await reg.pushManager.getSubscription();
+  }catch{return null}
+}
+async function updatePushUI(){
+  const mainBtn=qs('#enablePushBtn');
+  const dayBtn=qs('#enablePushFromMyDay');
+  const status=qs('#pushStatusText');
+  const banner=qs('#employeePushBanner');
+  const role=getCloudSession()?.profile?.role||sessionUser()?.role;
+  const employeeRole=role==='employee';
+
+  if(banner)banner.hidden=!employeeRole;
+  if(!mainBtn&&!dayBtn)return;
+
+  if(!employeeRole){
+    if(mainBtn){
+      mainBtn.textContent='Mitarbeiter-Push';
+      mainBtn.disabled=true;
+    }
+    if(status){
+      status.textContent='Mitarbeiter aktivieren Push einmal auf ihrem eigenen Handy.';
+      status.className='push-status-text';
+    }
+    return;
+  }
+
+  const supported=('Notification'in window)&&('serviceWorker'in navigator)&&('PushManager'in window);
+  if(!supported){
+    if(mainBtn){mainBtn.textContent='Auf diesem Gerät nicht verfügbar';mainBtn.disabled=true}
+    if(dayBtn){dayBtn.textContent='Push nicht unterstützt';dayBtn.disabled=true}
+    if(status){status.textContent='Dieses Gerät unterstützt Web-Push nicht.';status.className='push-status-text warn'}
+    return;
+  }
+
+  if(isIOSDevice()&&!isStandaloneApp()){
+    if(mainBtn){mainBtn.textContent='Erst zum Home-Bildschirm hinzufügen';mainBtn.disabled=false}
+    if(dayBtn){dayBtn.textContent='Push einrichten';dayBtn.disabled=false}
+    if(status){status.textContent='iPhone: App zuerst über Teilen → Zum Home-Bildschirm installieren.';status.className='push-status-text warn'}
+    if(banner){
+      const t=qs('#employeePushBannerText');
+      if(t)t.textContent='Auf dem iPhone funktioniert Push nach Installation über Teilen → Zum Home-Bildschirm. Danach hier einmal aktivieren.';
+    }
+    return;
+  }
+
+  const sub=await currentPushSubscription();
+  const active=Notification.permission==='granted'&&!!sub;
+  if(mainBtn){
+    mainBtn.disabled=false;
+    mainBtn.textContent=active?'✓ Handy-Benachrichtigungen aktiv':'Handy-Benachrichtigungen aktivieren';
+  }
+  if(dayBtn){
+    dayBtn.disabled=false;
+    dayBtn.textContent=active?'✓ Benachrichtigungen aktiv':'Benachrichtigungen aktivieren';
+  }
+  if(status){
+    status.textContent=active?'Dieses Gerät empfängt neue Einsatz-Aufträge als Push.':'Noch nicht aktiviert.';
+    status.className='push-status-text '+(active?'ok':'warn');
+  }
+  if(banner&&active)banner.hidden=true;
+}
+async function enableEmployeePush(){
+  const s=getCloudSession();
+  let p=s?.profile;
+  if(!s?.access_token){
+    alert('Bitte zuerst mit deinem Mitarbeiterkonto anmelden.');
+    return;
+  }
+  if(!p)p=await cloudLoadProfile(false);
+  if(p?.role!=='employee'||!p?.employee_ref){
+    alert('Push-Benachrichtigungen werden auf dem Handy des jeweiligen Mitarbeiters aktiviert.');
+    return;
+  }
+  if(!('Notification'in window)||!('serviceWorker'in navigator)||!('PushManager'in window)){
+    alert('Dieses Gerät unterstützt keine Push-Benachrichtigungen.');
+    return;
+  }
+  if(isIOSDevice()&&!isStandaloneApp()){
+    alert('Auf dem iPhone bitte zuerst: Teilen → Zum Home-Bildschirm. Öffne danach die installierte Hausmeister-App und tippe dort auf „Benachrichtigungen aktivieren“.');
+    return;
+  }
+  try{
+    const permission=await Notification.requestPermission();
+    if(permission!=='granted'){
+      alert('Benachrichtigungen wurden nicht erlaubt. Bitte in den Geräte-/Browser-Einstellungen für Hausmeister erlauben.');
+      await updatePushUI();
+      return;
+    }
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){
+      sub=await reg.pushManager.subscribe({
+        userVisibleOnly:true,
+        applicationServerKey:webPushKeyToBytes(WEB_PUSH_PUBLIC_KEY)
+      });
+    }
+    const c=getCloudConfig();
+    const json=sub.toJSON();
+    await cloudRequest('/rest/v1/rd_push_subscriptions?on_conflict=endpoint',{
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body:JSON.stringify([{
+        endpoint:sub.endpoint,
+        org_id:c.orgId,
+        user_id:s.user.id,
+        employee_ref:String(p.employee_ref),
+        subscription:json,
+        device_label:(navigator.userAgent||'Gerät').slice(0,180),
+        updated_at:new Date().toISOString()
+      }])
+    });
+    await reg.showNotification('Hausmeister',{
+      body:'Handy-Benachrichtigungen sind jetzt aktiv.',
+      icon:'./app-icon.svg',
+      tag:'push-enabled'
+    });
+    await updatePushUI();
+  }catch(err){
+    alert('Push konnte nicht aktiviert werden: '+err.message);
+    await updatePushUI();
+  }
+}
+async function sendJobPush(job){
+  if(!job||!cloudReady()||sessionUser()?.role!=='admin')return null;
+  const employeeRef=employeeRefForJob(job);
+  if(!employeeRef)return {ok:false,sent:0,message:'Kein Mitarbeiter zugeordnet.'};
+  const obj=data.objects.find(o=>o.name===job.object);
+  return cloudRequest('/functions/v1/send-job-push',{
+    method:'POST',
+    body:JSON.stringify({
+      employee_ref:String(employeeRef),
+      job:{
+        id:job.id,
+        title:job.title,
+        object:job.object,
+        address:obj?.address||job.object||'',
+        date:job.date,
+        time:job.time,
+        priority:job.priority||'normal'
+      }
+    })
+  });
+}
+async function syncNewJobsAndNotify(jobs,showMissingNotice=false){
+  const list=(jobs||[]).filter(Boolean);
+  if(!list.length||!cloudReady()||sessionUser()?.role!=='admin')return;
+  try{
+    await structuredUpsertCollection('jobs');
+    for(const job of list){
+      const result=await sendJobPush(job);
+      if(showMissingNotice&&result&&Number(result.sent||0)===0){
+        alert('Auftrag gespeichert. '+(job.employeeFull||job.employee||'Der Mitarbeiter')+' hat Handy-Benachrichtigungen auf seinem Gerät noch nicht aktiviert.');
+      }
+    }
+  }catch(err){
+    addCloudLog('error','Einsatz-Push: '+err.message);
+  }
+}
+let pushDeepLinkHandled=false;
+function maybeOpenPushJob(){
+  if(pushDeepLinkHandled||!appIsLoggedIn())return;
+  const id=Number(new URL(location.href).searchParams.get('job')||0);
+  if(!id)return;
+  if(!data.jobs.some(j=>Number(j.id)===id))return;
+  pushDeepLinkHandled=true;
+  setTimeout(()=>{
+    openJobDetail(id);
+    try{history.replaceState({},'',location.pathname)}catch{}
+  },120);
+}
+
 function notificationKey(type,id,date=''){
   return `${type}:${id}:${date}`;
 }
@@ -5874,6 +6104,7 @@ function renderNotifications(){
         <button class="mini-btn" onclick="snoozeNotification('${n.key}')">Morgen</button>
       </div>
     </article>`).join(''):'<div class="empty">Keine Mitteilungen in diesem Filter.</div>';
+  updatePushUI().catch(()=>{});
 }
 window.markNotificationRead=function(key){
   const m=getReadMap();m[key]=true;saveReadMap(m);renderNotifications();
@@ -5893,13 +6124,8 @@ window.openNotificationAction=function(key){
 qs('#markAllReadBtn').onclick=()=>{
   const m=getReadMap();buildNotifications().forEach(n=>m[n.key]=true);saveReadMap(m);renderNotifications();
 };
-qs('#enablePushBtn').onclick=async()=>{
-  if(!('Notification'in window)){alert('Dieser Browser unterstützt keine Browser-Benachrichtigungen.');return}
-  const p=await Notification.requestPermission();
-  if(p==='granted'){
-    new Notification('Hausmeister',{body:'Browser-Erinnerungen wurden aktiviert.'});
-  }
-};
+qs('#enablePushBtn').onclick=enableEmployeePush;
+if(qs('#enablePushFromMyDay'))qs('#enablePushFromMyDay').onclick=enableEmployeePush;
 qsa('.notif-filter').forEach(b=>b.onclick=()=>{
   notificationFilter=b.dataset.notifFilter;
   qsa('.notif-filter').forEach(x=>x.classList.toggle('active',x===b));
@@ -6215,9 +6441,11 @@ qs('#modal').addEventListener('close',()=>{qs('#modal').dataset.editId='';});
 qs('#modalForm').addEventListener('submit',async e=>{
   if(e.submitter?.value==='cancel')return;e.preventDefault();
   const fd=new FormData(e.currentTarget),type=qs('#modal').dataset.type;
+  let createdJob=null;
   if(type==='job'){
     const obj=data.objects.find(o=>o.name===fd.get('object')),emp=fd.get('employee');
-    data.jobs.push({id:Date.now(),title:fd.get('title'),object:fd.get('object'),customer:obj?.customer||'',date:fd.get('date'),time:fd.get('time'),employee:(emp||'').split(' ')[0],employeeFull:emp,status:'open',priority:fd.get('priority')||'normal',estimatedMinutes:Number(fd.get('estimatedMinutes')||60),hours:0,timerSeconds:0,checklist:[{t:'Arbeit vorbereiten',d:false},{t:'Arbeit durchführen',d:false},{t:'Bereich sauber hinterlassen',d:false}],notes:'',materialsUsed:[]});
+    createdJob={id:Date.now(),title:fd.get('title'),object:fd.get('object'),customer:obj?.customer||'',date:fd.get('date'),time:fd.get('time'),employee:(emp||'').split(' ')[0],employeeFull:emp,status:'open',priority:fd.get('priority')||'normal',estimatedMinutes:Number(fd.get('estimatedMinutes')||60),hours:0,timerSeconds:0,checklist:[{t:'Arbeit vorbereiten',d:false},{t:'Arbeit durchführen',d:false},{t:'Bereich sauber hinterlassen',d:false}],notes:'',materialsUsed:[]};
+    data.jobs.push(createdJob);
   }else if(type==='object'){
     const editId=Number(qs('#modal').dataset.editId||0);
     const name=String(fd.get('name')||'').trim();
@@ -6371,6 +6599,7 @@ qs('#modalForm').addEventListener('submit',async e=>{
     data.materials.push({id:Date.now(),name:fd.get('name'),unit:fd.get('unit')||'Stück',stock:Number(fd.get('stock')||0),minStock:Number(fd.get('minStock')||0)});
   }
   save();render();qs('#modal').close();
+  if(type==='job'&&createdJob)syncNewJobsAndNotify([createdJob],true);
 });
 
 qs('#seedBtn').onclick=()=>{if(sessionUser()?.role!=='admin')return;if(confirm('Demo-Daten wirklich zurücksetzen?')){data=clone(seed);activeSessionUserId=1001;localStorage.setItem('rd_session_user_id','1001');save();render();showView('dashboard')}};
