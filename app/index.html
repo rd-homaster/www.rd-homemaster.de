@@ -2044,6 +2044,12 @@ window.premCloseLogin=function(){
   document.getElementById('premOverlay').hidden=true;
   document.getElementById('loginMessage').textContent='';
 };
+window.addEventListener('DOMContentLoaded',function(){
+  // Reuse the company's full-resolution original logo already embedded in the app.
+  var original=document.querySelector('.home-company-logo img');
+  if(!original || !original.src || !original.src.startsWith('data:image/'))return;
+  document.querySelectorAll('#loginScreen .prem-brand img,#loginScreen .prem-modal-logo').forEach(function(img){img.src=original.src;});
+});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape' && !document.getElementById('premOverlay').hidden)window.premCloseLogin();
 });
@@ -4324,6 +4330,7 @@ function renderLoginAccounts(){
   }).join('');
 }
 function showLoginScreen(message=''){
+  if(window.premCloseLogin)window.premCloseLogin();
   markAppLoggedOut();
   document.body.classList.add('login-locked');
   if(qs('#loginMessage')){
@@ -4339,6 +4346,7 @@ function showLoginScreen(message=''){
   }
 }
 function unlockApp(){
+  if(window.premCloseLogin)window.premCloseLogin();
   markAppLoggedIn();
   document.body.classList.remove('login-locked');
   applyRoleUI();
