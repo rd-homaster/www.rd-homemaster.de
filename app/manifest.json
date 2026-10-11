@@ -1,0 +1,19 @@
+{
+  "name": "Hausmeister",
+  "short_name": "Hausmeister",
+  "description": "Hausmeister Betriebs-App für Aufträge, Objekte, Kontrollen, Berichte, Wartungspläne und Mitarbeitereinsätze.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0747c9",
+  "icons": [
+    {
+      "src": "app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
