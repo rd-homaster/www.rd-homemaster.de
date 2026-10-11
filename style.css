@@ -149,3 +149,129 @@ button{font:inherit}
   .hero-app-link{padding:12px}
   .hero-app-copy small{font-size:11px}
 }
+
+
+/* Google Bewertungen – RD Homemaster */
+.google-review-section{
+  background:linear-gradient(120deg,#f4f8fc 0%,#fdfdfd 65%,#f7f9fc 100%);
+  padding:75px max(24px,calc((100vw - var(--max))/2));
+  border-top:1px solid #edf0f4;
+  border-bottom:1px solid #e8edf3;
+}
+.google-review-inner{
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);
+  gap:clamp(25px,5vw,80px);
+  align-items:center;
+  max-width:var(--max);
+  margin:auto;
+}
+.google-review-eyebrow{
+  display:flex;
+  gap:11px;
+  align-items:center;
+  margin:0 0 18px;
+  color:#516681;
+  font-size:11px;
+  letter-spacing:.17em;
+  font-weight:900;
+}
+.google-review-eyebrow span{
+  display:block;
+  width:34px;
+  height:4px;
+  background:var(--orange);
+  border-radius:6px;
+}
+.google-review-copy h2{
+  margin:0 0 20px;
+  font-size:clamp(30px,3.5vw,49px);
+  line-height:1.1;
+  letter-spacing:-.043em;
+}
+.google-review-copy h2 em{
+  font-style:normal;
+  color:#2374a9;
+}
+.google-review-copy>p:not(.google-review-eyebrow){
+  max-width:650px;
+  color:#607185;
+  font-size:16px;
+  line-height:1.7;
+}
+.google-review-stars{
+  font-size:29px;
+  letter-spacing:.08em;
+  line-height:1.1;
+  color:#eaa240;
+  margin-top:24px;
+}
+.google-review-action{
+  background:#fff;
+  border:1px solid #dfe7f0;
+  border-top:4px solid var(--orange);
+  border-radius:19px;
+  padding:31px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  box-shadow:0 18px 44px rgba(20,53,82,.07);
+}
+.google-review-mark{
+  font-family:Arial,sans-serif;
+  font-size:37px;
+  font-weight:800;
+  letter-spacing:-.07em;
+  background:conic-gradient(#4285f4 0 105deg,#34a853 105deg 185deg,#fbbc05 185deg 245deg,#ea4335 245deg 305deg,#4285f4 305deg);
+  color:transparent;
+  background-clip:text;
+  -webkit-background-clip:text;
+  margin-bottom:15px;
+}
+.google-review-action strong{
+  font-size:22px;
+  font-weight:900;
+  color:#172e47;
+}
+.google-review-action p{
+  color:#687b8e;
+  line-height:1.6;
+  margin:11px 0 22px;
+  font-size:14px;
+}
+.google-review-btn{
+  width:100%;
+  min-height:51px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  background:#122e48;
+  border-radius:10px;
+  color:#fff;
+  padding:13px 17px;
+  font-size:14px;
+  font-weight:850;
+  transition:transform .15s,background .15s;
+}
+.google-review-btn:hover,.google-review-btn:focus-visible{
+  background:#18527a;
+  color:#fff;
+  transform:translateY(-2px);
+}
+.google-review-btn span{font-size:21px}
+.google-review-action small{
+  color:#8695a6;
+  font-size:11px;
+  line-height:1.55;
+  margin-top:14px;
+}
+@media(max-width:900px){
+  .google-review-section{padding:50px 24px}
+  .google-review-inner{grid-template-columns:1fr;gap:28px}
+}
+@media(max-width:640px){
+  .google-review-section{padding:40px 16px}
+  .google-review-copy>p:not(.google-review-eyebrow){font-size:14px}
+  .google-review-action{padding:23px}
+}
