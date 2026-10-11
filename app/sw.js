@@ -1,4 +1,4 @@
-const CACHE='rd-homemaster-live-1.3.0';
+const CACHE='hausmeister-live-logo-fix-2';
 const ASSETS=['./','./index.html','./manifest.json','./app-icon.svg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
