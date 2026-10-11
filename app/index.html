@@ -1770,6 +1770,62 @@ body.role-employee [data-view="customers"]{display:none!important}
   .employee-push-banner .primary-btn{width:100%}
   .push-status-text{text-align:left;width:100%}
 }
+
+/* Neue öffentliche RD-Homemaster-Startseite – die interne Anwendung bleibt unverändert */
+body.login-locked{overflow:auto}
+.login-screen{display:none;padding:0;background:#f5f8fc;min-height:100vh}
+body.login-locked .login-screen{display:block}
+.rd-landing{max-width:1280px;margin:auto;padding:0 30px;color:#10253e;font-family:Inter,Arial,sans-serif}
+.rd-top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px 0;border-bottom:1px solid #e1e8f2}
+.rd-logo{width:240px;max-width:52vw;height:auto}
+.rd-toplinks{display:flex;gap:23px;align-items:center;font-size:14px;font-weight:800;color:#415a78}
+.rd-toplinks a:last-child{background:#102940;color:white;padding:13px 18px;border-radius:12px}
+.rd-content{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:48px;padding:68px 0}
+.rd-kicker{color:#52708d;font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+.rd-content h1{font-size:clamp(42px,5.5vw,76px);letter-spacing:-.055em;line-height:1.05;margin:23px 0}
+.rd-content h1 span{background:linear-gradient(90deg,#ff6a00,#27b5f1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rd-lead{font-size:18px;color:#68788e;line-height:1.75;max-width:580px}
+.rd-hero-actions{display:flex;gap:12px;margin:28px 0;flex-wrap:wrap}
+.rd-action{border:1px solid #d6e1ed;border-radius:13px;padding:16px 22px;font-weight:900;cursor:pointer;background:white;color:#12304c}
+.rd-primary{background:#102940;color:white;border-color:#102940}
+.rd-trust{display:flex;gap:18px;flex-wrap:wrap;font-weight:700;font-size:13px;color:#637a90}
+.rd-preview{background:#fff;border:1px solid #e1e9f1;box-shadow:0 18px 70px #17345717;padding:30px;border-radius:27px;border-top:5px solid #20b6ec}
+.rd-preview-top{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:#73849a}
+.rd-preview-top strong{color:#142d49}
+.rd-preview h2{margin:30px 0 6px;font-size:29px}
+.rd-preview>p{font-size:14px;color:#687c93}
+.rd-preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:25px 0}
+.rd-preview-grid>div{border:1px solid #e8eef5;background:#f6f9fd;padding:17px 10px;border-radius:14px}
+.rd-preview-grid strong,.rd-preview-grid small{display:block}
+.rd-preview-grid strong{font-size:16px}
+.rd-preview-grid small{font-size:11px;color:#7790a8;margin-top:7px}
+.rd-preview-line{padding:17px 0;border-top:1px solid #e6edf5;font-weight:700;font-size:13px}
+.rd-preview-line>span{color:#ff6a00;margin-right:9px}
+.rd-preview-line>small{float:right;color:#6f8aa2}
+.rd-accounts{padding:44px 0 95px}
+.rd-heading h2{font-size:clamp(30px,4vw,43px);margin:12px 0}
+.rd-heading>p:last-child{color:#667990}
+.rd-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px}
+.rd-account{background:#fff;border:1px solid #e2eaf3;border-top:5px solid #ff720b;border-radius:22px;padding:30px;box-shadow:0 16px 45px #163b5410;display:flex;flex-direction:column;align-items:flex-start}
+.rd-account:nth-child(2){border-top-color:#27b5f1}
+.rd-icon{width:58px;height:58px;border-radius:15px;background:#eef6ff;display:grid;place-items:center;font-size:26px}
+.rd-account h3{font-size:27px;margin:25px 0 8px}
+.rd-account p{color:#677a91;line-height:1.7;min-height:65px}
+.rd-account .rd-action{margin-top:auto}
+.rd-footer{border-top:1px solid #dfe7ef;padding:24px 0 35px;font-size:13px;color:#74859a}
+.rd-login-overlay[hidden]{display:none!important}
+.rd-login-overlay{position:fixed;inset:0;background:#081b2cbf;z-index:999;display:grid;place-items:center;padding:16px;overflow:auto}
+.rd-login-card{width:min(470px,100%);min-height:0;border-radius:24px;padding:36px;display:block;position:relative;box-shadow:0 25px 80px #0003}
+.rd-modal-logo{width:185px;max-width:100%;height:auto}
+.rd-close{position:absolute;right:17px;top:13px;border:none;background:none;font-size:30px;cursor:pointer}
+.rd-role-tabs{display:flex;gap:8px;margin:15px 0 20px}
+.rd-role-tabs button{flex:1;border:1px solid #dce6f1;background:#f6f9fe;padding:13px;border-radius:12px;font-weight:800;cursor:pointer}
+.rd-role-tabs button.active{background:#102940;color:white}
+.rd-login-card #appCloudLoginBtn:disabled{opacity:.46;cursor:not-allowed}
+.rd-login-card .login-actions{display:block}
+.rd-login-card .login-actions button[hidden]{display:none!important}
+@media(max-width:850px){.rd-content{grid-template-columns:1fr;padding:42px 0}.rd-cards{grid-template-columns:1fr}.rd-toplinks a:first-child{display:none}}
+@media(max-width:520px){.rd-landing{padding:0 18px}.rd-content h1{font-size:45px}.rd-preview-grid{grid-template-columns:1fr}.rd-hero-actions{display:grid}.rd-action{width:100%}.rd-account{padding:22px}.rd-preview{padding:20px}.rd-login-card{padding:25px}}
 </style>
 </head>
 <body>
@@ -1783,52 +1839,84 @@ body.role-employee [data-view="customers"]{display:none!important}
 </script>
 
 <div id="loginScreen" class="login-screen">
-  <div class="login-shell">
-    <section class="login-brand-panel">
-      <div class="business-logo-login"><img src="rd-homemaster-logo.svg" alt="RD Homemaster Hausmeisterservice"></div>
-      <p class="login-kicker">RD HOMEMASTER</p>
-      <h1>Dein Hausmeisterservice.<br>Einfach organisiert.</h1>
-      <p class="login-brand-copy">Die interne Betriebs-App für Chef und Mitarbeiter von RD Homemaster Hausmeisterservice.</p>
-      <div class="login-benefits">
-        <span>✓ Chef-Zentrale mit Vollzugriff</span>
-        <span>✓ Mitarbeiter-Tagesplanung</span>
-        <span>✓ Objektkontrollen & Mängel</span>
-        <span>✓ Arbeitsberichte & Fotos</span>
+  <div class="rd-landing">
+    <header class="rd-top">
+      <img src="rd-homemaster-logo.svg" alt="RD Homemaster Hausmeisterservice" class="rd-logo">
+      <div class="rd-toplinks"><a href="https://www.rd-homemaster.de/">Website</a><a href="#rd-accounts">Anmelden ↗</a></div>
+    </header>
+    <main class="rd-content">
+      <section class="rd-intro">
+        <p class="rd-kicker">RD Homemaster · Digitales Serviceportal</p>
+        <h1>Alles im Blick.<br><span>Alles im Griff.</span></h1>
+        <p class="rd-lead">Ihr direkter Zugang zu unseren Dienstleistungen. Aufträge, Dokumentationen und Einsätze – übersichtlich an einem Ort.</p>
+        <div class="rd-hero-actions">
+          <button type="button" class="rd-action rd-primary" onclick="rdChoosePortal('kunde')">Kunden-Login öffnen →</button>
+          <button type="button" class="rd-action rd-outline" onclick="rdChoosePortal('mitarbeiter')">Mitarbeiter-Login</button>
+        </div>
+        <div class="rd-trust"><span>✓ Übersichtliche Abläufe</span><span>✓ Mobil nutzbar</span><span>✓ Geschützter Zugang</span></div>
+      </section>
+      <div class="rd-preview" aria-label="Vorschau der App-Oberfläche">
+        <div class="rd-preview-top"><strong>Serviceübersicht</strong><span>RD Homemaster</span></div>
+        <h2>Willkommen!</h2><p>Alles Wichtige an einem Ort.</p>
+        <div class="rd-preview-grid">
+          <div><strong>Aufträge</strong><small>Überblick & Status</small></div>
+          <div><strong>Objekte</strong><small>Betreuung & Service</small></div>
+          <div><strong>Berichte</strong><small>Dokumentation</small></div>
+        </div>
+        <div class="rd-preview-line"><span>●</span> Auftragsverwaltung <small>Übersichtlich</small></div>
+        <div class="rd-preview-line"><span>●</span> Digitale Arbeitsberichte <small>Dokumentiert</small></div>
+        <div class="rd-preview-line"><span>●</span> Mobile Einsatzplanung <small>Flexibel</small></div>
+      </div>
+    </main>
+    <section id="rd-accounts" class="rd-accounts">
+      <div class="rd-heading"><p class="rd-kicker">Zwei Zugänge</p><h2>Der passende Zugang für Sie.</h2><p>Kunden und Mitarbeiter erhalten getrennte Anmeldebereiche.</p></div>
+      <div class="rd-cards">
+        <article class="rd-account"><div class="rd-icon">♙</div><h3>Kunden-Login</h3><p>Serviceanfragen, eigene Objekte, Auftragsstatus und Berichte.</p><button type="button" class="rd-action rd-primary" onclick="rdChoosePortal('kunde')">Zum Kunden-Login →</button></article>
+        <article class="rd-account"><div class="rd-icon">▤</div><h3>Mitarbeiter-Login</h3><p>Eigene Einsätze, Tagesplanung, Zeiterfassung und Dokumentationen.</p><button type="button" class="rd-action rd-outline" onclick="rdChoosePortal('mitarbeiter')">Zum Mitarbeiter-Login →</button></article>
       </div>
     </section>
-
-    <section class="login-card">
-      <div class="login-card-head">
-        <span class="login-logo-small"><img src="app-icon.svg" alt=""></span>
-        <div><strong>RD Homemaster</strong><small>Hausmeisterservice</small></div>
+    <footer class="rd-footer">© RD Homemaster Hausmeisterservice · <a href="https://www.rd-homemaster.de/">Zur Firmenwebsite</a></footer>
+  </div>
+  <div class="rd-login-overlay" id="rdLoginOverlay" hidden>
+    <section class="login-card rd-login-card" role="dialog" aria-modal="true" aria-labelledby="rdLoginTitle">
+      <button class="rd-close" type="button" onclick="rdClosePortal()" aria-label="Schließen">×</button>
+      <div class="login-card-head"><img src="rd-homemaster-logo.svg" alt="RD Homemaster Hausmeisterservice" class="rd-modal-logo"></div>
+      <h2 id="rdLoginTitle">Mitarbeiter-Login</h2>
+      <p id="rdLoginSubtitle">Bitte mit Ihrem Benutzerkonto anmelden.</p>
+      <div class="rd-role-tabs">
+        <button type="button" id="rdCustomerTab" onclick="rdChoosePortal('kunde')">Kunde</button>
+        <button type="button" id="rdEmployeeTab" onclick="rdChoosePortal('mitarbeiter')">Mitarbeiter</button>
       </div>
-      <div class="login-tabs"><button class="login-tab active" data-login-tab="cloud">Anmelden</button></div>
-
       <div id="login-cloud-pane" class="login-pane active">
-        <h2>Willkommen zurück</h2>
-        <p>Mit deinem Benutzerkonto anmelden.</p>
-        <label>E-Mail-Adresse
-          <input id="appLoginEmail" type="email" autocomplete="username" placeholder="name@beispiel.de">
-        </label>
-        <label>Passwort
-          <div class="password-field">
-            <input id="appLoginPassword" type="password" autocomplete="current-password" placeholder="Passwort">
-            <button type="button" id="toggleLoginPassword">Anzeigen</button>
-          </div>
-        </label>
+        <label>E-Mail-Adresse<input id="appLoginEmail" type="email" autocomplete="username" placeholder="name@beispiel.de"></label>
+        <label>Passwort<div class="password-field"><input id="appLoginPassword" type="password" autocomplete="current-password" placeholder="Passwort"><button type="button" id="toggleLoginPassword">Anzeigen</button></div></label>
         <div class="login-actions">
           <button class="primary-btn login-main-btn" id="appCloudLoginBtn">Anmelden</button>
-          <button class="ghost-btn login-secondary-btn" id="appCloudSignupBtn">Konto erstellen</button>
+          <button class="ghost-btn login-secondary-btn" id="appCloudSignupBtn" hidden>Konto erstellen</button>
         </div>
-        <div id="appCloudLoginHint" class="login-hint">Firmenzugang für Chef und Mitarbeiter. Mitarbeiter werden vom Chef freigeschaltet.</div>
+        <div id="appCloudLoginHint" class="login-hint">Mitarbeiter melden sich mit ihrem freigeschalteten Konto an.</div>
       </div>
-
       <div id="loginMessage" class="login-message"></div>
-      <p class="login-footer">RD Homemaster Hausmeisterservice · Betriebsorganisation</p>
+      <p class="login-footer">RD Homemaster Hausmeisterservice</p>
     </section>
   </div>
 </div>
-
+<script>
+window.rdChoosePortal = function(role){
+  var customer=role==='kunde';
+  var overlay=document.getElementById('rdLoginOverlay');
+  if(overlay) overlay.hidden=false;
+  document.getElementById('rdLoginTitle').textContent=customer?'Kunden-Login':'Mitarbeiter-Login';
+  document.getElementById('rdLoginSubtitle').textContent=customer?'Kundenportal – persönlicher Zugang':'Bitte mit Ihrem freigeschalteten Benutzerkonto anmelden.';
+  document.getElementById('rdCustomerTab').classList.toggle('active',customer);
+  document.getElementById('rdEmployeeTab').classList.toggle('active',!customer);
+  document.getElementById('appCloudLoginBtn').disabled=customer;
+  var hint=document.getElementById('appCloudLoginHint');
+  if(hint)hint.textContent=customer?'Der Kunden-Login wird eingerichtet und ist noch nicht freigeschaltet.':'Chef und Mitarbeiter melden sich hier mit ihren bestehenden Zugangsdaten an.';
+  var msg=document.getElementById('loginMessage'); if(msg)msg.textContent='';
+};
+window.rdClosePortal=function(){document.getElementById('rdLoginOverlay').hidden=true;};
+</script>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="brand business-brand">
