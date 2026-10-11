@@ -1355,7 +1355,7 @@ body.login-locked .login-screen{display:flex}
 .modal-help{margin:7px 0 0;padding:8px 10px;background:#f4f8fc;border-radius:9px;color:var(--muted);font-size:10px;line-height:1.4}
 @media(max-width:760px){#view-employees .section-intro{gap:10px}#view-employees .section-intro .primary-btn{white-space:nowrap}.employee-empty{min-height:230px;padding:24px 18px}}
 
-/* V1.2.4 – Sidebar bleibt vollständig dunkel/blau */
+/* V1.2.5 – Sidebar bleibt vollständig dunkel/blau */
 .sidebar{overflow:hidden}
 .side-nav{flex:1 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;padding-right:3px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.22) transparent}
 .side-nav::-webkit-scrollbar{width:5px}
@@ -1378,6 +1378,13 @@ body.login-locked .login-screen{display:flex}
 .employee-detail-contact strong{font-size:11px;overflow-wrap:anywhere}
 @media(max-width:560px){.employee-detail-contact{grid-template-columns:1fr}}
 
+
+/* V1.2.5 – Mitarbeiter bearbeiten / löschen */
+.employee-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.employee-admin-actions button{flex:1;min-width:170px}
+.danger-btn{border:1px solid #e7bcbc;background:#fff5f5;color:#b52f2f;border-radius:11px;padding:10px 13px;font-weight:850;cursor:pointer}
+.danger-btn:hover{background:#ffeaea;border-color:#dc9f9f}
+@media(max-width:560px){.employee-admin-actions{display:grid;grid-template-columns:1fr}.employee-admin-actions button{min-width:0}}
 </style>
 </head>
 <body>
@@ -1464,7 +1471,7 @@ body.login-locked .login-screen{display:flex}
         <div class="avatar" id="sessionAvatar">H</div>
         <div><strong id="sessionUserName">Ricardo Dias</strong><span id="sessionUserRole">Administrator</span></div>
       </div>
-      <div class="sidebar-version">Hausmeister · Version 1.2.4</div>
+      <div class="sidebar-version">Hausmeister · Version 1.2.5</div>
     </div>
   </aside>
 
@@ -2513,6 +2520,11 @@ body.login-locked .login-screen{display:flex}
     <div id="employeeDetailStats" class="employee-detail-stats"></div>
     <div id="employeeDetailContact" class="employee-detail-contact"></div>
 
+    <div class="employee-admin-actions">
+      <button class="primary-btn" id="editEmployeeBtn">✎ Mitarbeiter bearbeiten</button>
+      <button class="danger-btn" id="deleteEmployeeBtn">Mitarbeiter löschen</button>
+    </div>
+
     <div class="employee-share-box">
       <span class="section-label">APP-ZUGANG</span>
       <h3>Mitarbeiter-App weitergeben</h3>
@@ -2858,7 +2870,7 @@ body.login-locked .login-screen{display:flex}
 
 <script>
 const STORAGE='hausmeister_app_v10';
-const APP_VERSION='1.2.4';
+const APP_VERSION='1.2.5';
 const PRODUCTION_MODE=true;
 const PROD_INIT_KEY='hausmeister_production_initialized_v1';
 function localISODate(d=new Date()){
@@ -4725,6 +4737,85 @@ window.refreshEmployeeInvite=async function(){
   alert(ok?'Der Mitarbeiter-Zugang ist freigeschaltet. Jetzt kannst du ihm den Zugangstext senden.':'Die Freischaltung konnte nicht erstellt werden. Prüfe Cloud & Sync.');
 }
 
+
+async function cloudManageEmployeeAccount(action,employee){
+  if(!cloudReady())return {ok:false,offline:true};
+  return await cloudRequest('/functions/v1/admin-manage-employee',{
+    method:'POST',
+    body:JSON.stringify({
+      action,
+      employee_ref:String(employee.id),
+      email:String(employee.email||'').trim(),
+      display_name:String(employee.name||'').trim()
+    })
+  });
+}
+window.editEmployee=function(id){
+  if(sessionUser()?.role!=='admin')return;
+  const e=data.employees.find(x=>Number(x.id)===Number(id));if(!e)return;
+  qs('#employeeDetailModal').close();
+  openModal('employee');
+  qs('#modal').dataset.editId=String(e.id);
+  qs('#modalLabel').textContent='BEARBEITEN';
+  qs('#modalTitle').textContent='Mitarbeiter bearbeiten';
+  qs('#modalSave').textContent='Änderungen speichern';
+  const f=qs('#modalFields');
+  f.querySelector('[name="name"]').value=e.name||'';
+  f.querySelector('[name="role"]').value=e.role||'Mitarbeiter';
+  f.querySelector('[name="email"]').value=e.email||'';
+  f.querySelector('[name="phone"]').value=e.phone||'';
+  f.querySelector('[name="status"]').value=e.status||'Verfügbar';
+}
+window.deleteEmployee=async function(id){
+  if(sessionUser()?.role!=='admin')return;
+  const e=data.employees.find(x=>Number(x.id)===Number(id));if(!e)return;
+  const openJobs=data.jobs.filter(j=>j.status!=='done'&&employeeMatchesJob(e,j));
+  const msg=`Mitarbeiter „${e.name}“ wirklich löschen?
+
+• Der App-Zugang wird entfernt.
+• ${openJobs.length} offene/geplante Auftrag${openJobs.length===1?'':'e'} werden auf „Nicht zugewiesen“ gesetzt.
+• Erledigte Aufträge und Berichte bleiben zur Dokumentation erhalten.
+
+Dieser Schritt kann nicht automatisch rückgängig gemacht werden.`;
+  if(!confirm(msg))return;
+
+  if(cloudReady()){
+    try{
+      await cloudManageEmployeeAccount('delete',e);
+      const c=getCloudConfig();
+      await cloudRequest(`/rest/v1/rd_employees?org_id=eq.${encodeURIComponent(c.orgId)}&record_id=eq.${encodeURIComponent(String(e.id))}`,{method:'DELETE'});
+      if(e.email){
+        await cloudRequest(`/rest/v1/rd_user_invites?organization_id=eq.${encodeURIComponent(c.orgId)}&email=eq.${encodeURIComponent(e.email)}&used_at=is.null`,{method:'DELETE'}).catch(()=>{});
+      }
+    }catch(err){
+      alert('Der Mitarbeiter wurde noch nicht gelöscht, weil der Cloud-Zugang nicht sauber entfernt werden konnte: '+err.message);
+      return;
+    }
+  }else{
+    if(!confirm('Die Cloud ist nicht verbunden. Nur auf diesem Gerät löschen? Der Mitarbeiter könnte beim nächsten Cloud-Laden wieder erscheinen.'))return;
+  }
+
+  const oldName=e.name||'';
+  const oldFirst=oldName.split(' ')[0]||oldName;
+  data.jobs.forEach(j=>{
+    if(j.status==='done')return;
+    const match=j.employeeFull===oldName || j.employee===oldName || j.employee===oldFirst;
+    if(match){j.employee='';j.employeeFull='';}
+  });
+  data.plans.forEach(p=>{if(p.employee===oldName||p.employee===oldFirst)p.employee=''});
+  data.users=data.users.filter(u=>!(u.role==='employee'&&(
+    Number(u.employeeId)===Number(e.id) ||
+    (e.email&&String(u.email||'').toLowerCase()===String(e.email).toLowerCase())
+  )));
+  data.employees=data.employees.filter(x=>Number(x.id)!==Number(e.id));
+  if(Number(activeEmployeeId)===Number(e.id)){
+    activeEmployeeId=data.employees[0]?.id||0;
+    localStorage.setItem('rd_active_employee_id',String(activeEmployeeId||''));
+  }
+  save();qs('#employeeDetailModal').close();render();
+  alert('Mitarbeiter wurde gelöscht. Erledigte Aufträge und Berichte bleiben erhalten.');
+}
+
 window.openEmployeeDetail=function(id){
   const e=data.employees.find(x=>x.id===id);if(!e)return;
   activeEmployeeDetailId=id;
@@ -4745,6 +4836,8 @@ window.openEmployeeDetail=function(id){
   qs('#employeeDetailModal').showModal();
 };
 qs('#closeEmployeeDetail').onclick=()=>qs('#employeeDetailModal').close();
+qs('#editEmployeeBtn').onclick=()=>editEmployee(activeEmployeeDetailId);
+qs('#deleteEmployeeBtn').onclick=()=>deleteEmployee(activeEmployeeDetailId);
 qs('#copyEmployeeAccessBtn').onclick=()=>copyEmployeeAccess();
 qs('#copyEmployeeAppLinkBtn').onclick=()=>copyEmployeeAppLink();
 qs('#whatsappEmployeeAccessBtn').onclick=()=>shareEmployeeWhatsApp();
@@ -5684,6 +5777,9 @@ function openModal(type){
   const adminOnlyTypes=['job','object','customer','employee','maintenance','plan'];
   if(adminOnlyTypes.includes(type)&&sessionUser()?.role!=='admin')return;
   qs('#modal').dataset.type=type;
+  qs('#modal').dataset.editId='';
+  qs('#modalLabel').textContent='NEU';
+  qs('#modalSave').textContent='Speichern';
   const objectOptions=data.objects.map(o=>`<option>${o.name}</option>`).join('');
   const employeeOptions=data.employees.map(e=>`<option>${e.name}</option>`).join('');
   const cfg={
@@ -5719,16 +5815,49 @@ qs('#modalForm').addEventListener('submit',async e=>{
   }else if(type==='customer'){
     data.customers.push({id:Date.now(),name:fd.get('name'),contact:fd.get('contact')||'',phone:fd.get('phone')||'',mail:fd.get('mail')||'',objects:0});
   }else if(type==='employee'){
-    const employeeId=Date.now();
+    const editId=Number(qs('#modal').dataset.editId||0);
     const email=String(fd.get('email')||'').trim();
-    const employee={
-      id:employeeId,
-      name:String(fd.get('name')||'').trim(),
-      role:String(fd.get('role')||'Mitarbeiter').trim()||'Mitarbeiter',
-      status:String(fd.get('status')||'Verfügbar'),
-      email,
-      phone:String(fd.get('phone')||'').trim()
-    };
+    const name=String(fd.get('name')||'').trim();
+    const roleName=String(fd.get('role')||'Mitarbeiter').trim()||'Mitarbeiter';
+    const phone=String(fd.get('phone')||'').trim();
+    const status=String(fd.get('status')||'Verfügbar');
+
+    if(editId){
+      const employee=data.employees.find(x=>Number(x.id)===editId);
+      if(!employee)return;
+      const old={...employee};
+      const oldName=old.name||'',oldFirst=oldName.split(' ')[0]||oldName;
+      employee.name=name;employee.role=roleName;employee.status=status;employee.email=email;employee.phone=phone;
+      const newFirst=name.split(' ')[0]||name;
+      data.jobs.forEach(j=>{
+        const match=j.employeeFull===oldName || j.employee===oldName || j.employee===oldFirst;
+        if(match){j.employeeFull=name;j.employee=newFirst;}
+      });
+      data.plans.forEach(p=>{if(p.employee===oldName||p.employee===oldFirst)p.employee=name});
+      data.inspections.forEach(i=>{if(i.employee===oldName||i.employee===oldFirst)i.employee=name});
+
+      let access=data.users.find(u=>u.role==='employee'&&Number(u.employeeId)===editId);
+      if(access){access.name=name;access.email=email||access.email;}
+      else if(email){access={id:Date.now(),name,email,role:'employee',active:true,employeeId:editId};data.users.push(access);}
+
+      save();render();qs('#modal').close();e.currentTarget.reset();
+      if(cloudReady()){
+        try{
+          if(old.email&&old.email!==email){
+            const c=getCloudConfig();
+            await cloudRequest(`/rest/v1/rd_user_invites?organization_id=eq.${encodeURIComponent(c.orgId)}&email=eq.${encodeURIComponent(old.email)}&used_at=is.null`,{method:'DELETE'}).catch(()=>{});
+          }
+          const accountResult=await cloudManageEmployeeAccount('update',employee).catch(()=>({ok:false}));
+          if(access&&email&&!accountResult?.updated_account)await createCloudInviteForUser(access);
+          await structuredCloudPush(false);
+          alert('Mitarbeiterdaten wurden geändert und mit der Cloud synchronisiert.');
+        }catch(err){alert('Die Änderungen wurden lokal gespeichert. Cloud-Synchronisierung: '+err.message);}
+      }else alert('Mitarbeiterdaten wurden geändert.');
+      return;
+    }
+
+    const employeeId=Date.now();
+    const employee={id:employeeId,name,role:roleName,status,email,phone};
     data.employees.push(employee);
     let accessUser=null;
     if(email){
@@ -5739,9 +5868,7 @@ qs('#modalForm').addEventListener('submit',async e=>{
     save();render();qs('#modal').close();e.currentTarget.reset();
     if(accessUser&&cloudReady()){
       const invited=await createCloudInviteForUser(accessUser).catch(()=>false);
-      alert(invited
-        ? 'Mitarbeiter wurde angelegt. Der App-Zugang ist vorbereitet.'
-        : 'Mitarbeiter wurde angelegt. Der Cloud-Zugang konnte noch nicht vorbereitet werden.');
+      alert(invited?'Mitarbeiter wurde angelegt. Der App-Zugang ist vorbereitet.':'Mitarbeiter wurde angelegt. Der Cloud-Zugang konnte noch nicht vorbereitet werden.');
     }
     return;
   }else if(type==='maintenance'){
