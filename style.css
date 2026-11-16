@@ -88,68 +88,10 @@ button{font:inherit}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 
 
-/* RD Homemaster App – sichtbarer Zugang über die Firmenwebsite */
-.main-nav .nav-app-link{
-  color:#fff;
-  background:#132a42;
-  border-radius:9px;
-  padding:11px 14px;
-  font-weight:900;
-  white-space:nowrap;
-  box-shadow:0 5px 14px rgba(17,42,69,.12)
-}
-.main-nav .nav-app-link:hover,.main-nav .nav-app-link:focus-visible{
-  background:#225178;
-  color:#fff
-}
-.hero-app-link{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  max-width:450px;
-  padding:12px 16px;
-  margin:-2px 0 16px;
-  border:1px solid #cfdeea;
-  border-left:4px solid #ff790a;
-  border-radius:11px;
-  background:#fff;
-  box-shadow:0 6px 17px rgba(18,53,83,.06);
-  transition:border-color .2s,transform .2s,box-shadow .2s
-}
-.hero-app-link:hover,.hero-app-link:focus-visible{
-  transform:translateY(-2px);
-  border-color:#82b6d6;
-  box-shadow:0 12px 25px rgba(18,53,83,.11)
-}
-.hero-app-icon{
-  width:40px;
-  height:40px;
-  flex:0 0 40px;
-  display:grid;
-  place-items:center;
-  font-size:25px;
-  background:#eff5fb;
-  border-radius:10px;
-  color:#1a5b89
-}
-.hero-app-copy{display:grid;gap:4px;min-width:0}
-.hero-app-copy strong{font-size:14px;color:#112f4c}
-.hero-app-copy small{font-size:12px;color:#627b92}
-.hero-app-arrow{font-size:22px;font-weight:800;margin-left:auto;color:#ef771c}
 @media(max-width:1270px) and (min-width:901px){
   .main-nav{gap:10px;font-size:13px}
-  .main-nav .nav-app-link{padding:10px 12px}
   .header-inner{gap:14px}
 }
-@media(max-width:900px){
-  .main-nav .nav-app-link{width:100%;padding:13px 14px;margin:5px 0;display:block}
-  .hero-app-link{margin:0 0 18px;max-width:100%}
-}
-@media(max-width:640px){
-  .hero-app-link{padding:12px}
-  .hero-app-copy small{font-size:11px}
-}
-
 
 /* Google Bewertungen – RD Homemaster */
 .google-review-section{
